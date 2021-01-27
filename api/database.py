@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 import os
 
 if os.getenv('FASTAPI_ENV') == 'prod':
-    SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@postgres/db"
+    SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@postgres/postgres"
 else:
     SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 
