@@ -9,6 +9,7 @@ uvicorn = {extras = ["standard"], version = "*"}
 requests = "*"
 spotipy = "*"
 sqlalchemy = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
