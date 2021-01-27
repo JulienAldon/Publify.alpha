@@ -1,4 +1,5 @@
 FROM    node:12.2.0-alpine AS build
+ARG     REACT_APP_ENV=prod
 RUN     apk add git
 
 WORKDIR /app/front
