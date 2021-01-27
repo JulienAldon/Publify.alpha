@@ -1,17 +1,17 @@
 {
+  
   "env": {
     "test": {
       "presets": [
         ["preact-cli/babel", { "modules": "commonjs" }]
+      ],
+      "plugins": [
+        ["transform-inline-environment-variables", {
+          "include": [
+            "REACT_APP_ENV"
+          ]
+        }]
       ]
-    } 
-  },
-
-  "plugins": [
-    ["transform-inline-environment-variables", {
-      "include": [
-        "REACT_APP_ENV"
-      ]
-    }]
-  ]
+    }   
+  }
 }
