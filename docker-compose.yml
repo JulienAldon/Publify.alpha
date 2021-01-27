@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+    expose:
+      - 5432
+    volumes:
+      - /var/lib/postgresql
+      # - /srv/www/jammee.io/database-scripts:/docker-entrypoint-initdb.d
+  auth:
+    build: api
+    environment:
+      FASTAPI_ENV: prod
+    expose:
+      - 8000
+    depends_on:
+      - postgres
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+      args:
+        REACT_APP_ENV: prod
+    environment:
+      ROOT_FQDN: aldon.info
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - auth

@@ -1,4 +1,4 @@
-# Publify.alpha
+# Publify.alpha API
 ## Local development
 ```
 export SPOTIFY_CLIENT_ID=<your-spotify-client-id>
@@ -12,9 +12,14 @@ pipenv run uvicorn main:app --reload
 --------|---------------------|-----------------------------------------| 
 |GET    | /playlist           | # Return a playlist list                |
 |POST   | /playlist           | # Create a new playlist synchronization |
-|GET    | /playlist/<id>      | # Return a playlist's information       |
-|PUT    | /playlist/<id>      | # Update a playlist                     |
-|DELETE | /playlist/<id>      | # Remove a synchronization link         |
-|GET    | /playlist/<id>/sync | # Get synchronization status for playlist|
-|PUT    | /playlist/<id>/sync | # Request synchronization of a playlist |
+|GET    | /playlist/`<id>`      | # Return a playlist's information       |
+|PUT    | /playlist/`<id>`      | # Update a playlist link                    |
+|DELETE | /playlist/`<id>`      | # Remove a synchronization link         |
+|GET    | /playlist/`<id>`/sync | # Get synchronization status for playlist|
+|PUT    | /playlist/`<id>`/sync | # Request synchronization of a playlist |
 
+# Publify.alpha Front
+
+# Publify.alpha Db
+
+# Publify.alpha Nginx
