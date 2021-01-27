@@ -1,6 +1,6 @@
 FROM    node:12.2.0-alpine AS build
-ARG     REACT_APP_ENV=prod
 RUN     apk add git
+ENV     REACT_APP_ENV=prod
 
 WORKDIR /app/front
 COPY    front/package.json front/package-lock.json /app/front/
