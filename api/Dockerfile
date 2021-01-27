@@ -4,7 +4,7 @@ WORKDIR /auth
 
 RUN  apt-get update && apt-get install -y
 RUN  pip3 install pipenv
-COPY Pipfile Pipfile.lock /auth
+COPY Pipfile Pipfile.lock /auth/
 RUN  pipenv install
 
 COPY . /auth
