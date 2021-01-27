@@ -12,7 +12,7 @@ function createLink(token, body) {
 }
 
 function syncPlaylist(id, token, mode, elem) {
-	fetch(`${settings.SERVICE_URI}/playlist` + id + '/sync?mode=' + mode, {
+	fetch(`${settings.SERVICE_URI}/playlist/` + id + '/sync?mode=' + mode, {
 		method: 'PUT',
 		headers: {"Authorization": "Bearer " + token}
 	}).then((r) => {
@@ -23,7 +23,7 @@ function syncPlaylist(id, token, mode, elem) {
 }
 
 function deleteLink(id, token) {
-	fetch(`${settings.SERVICE_URI}/playlist` + id, {
+	fetch(`${settings.SERVICE_URI}/playlist/` + id, {
 		method: 'DELETE',
 		headers: {"Authorization": "Bearer " + token}
 	}).then((r) => {
