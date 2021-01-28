@@ -13,8 +13,8 @@ const About = () => (
 			<p>Create a spotify playlist containing new titles from all artists of a given spotify playlist.</p>
 		</article>
 		<footer>
-			<p>Application made with Preact and FastAPI by Julien Aldon</p>
-			<p>Design made by Sowlipsism</p>
+			<p>Application made with Preact and FastAPI by <a href="https://julien.aldon.info">Julien Aldon</a></p>
+			<p>Design made by <a href="https://owlish.io/">Neil Cecchini</a></p>
 		</footer>
 	</main>
 );
