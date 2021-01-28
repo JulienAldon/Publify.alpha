@@ -127,10 +127,9 @@ def create_playlist_sync(sync: SyncInformation, db: Session = Depends(get_db), a
     if user_id is None:
         raise HTTPException(status_code=400, detail="User does not exist")
     db_user = get_user_by_spotify_id(db=db, spotify_id=user_id)
-    print(db_user.id)
-    db_sync = get_sync_by_content(db, db_user.id, sync.collaborative, sync.public)
-    if db_sync:
-        raise HTTPException(status_code=400, detail="Sync Already exists")
+    # db_sync = get_sync_by_content(db, db_user.id, sync.collaborative, sync.public)
+    # if db_sync:
+    #     raise HTTPException(status_code=400, detail="Sync Already exists")
     return create_user_sync(db=db, item=sync, user_id=db_user.id)
 
 
