@@ -22,6 +22,21 @@ function syncPlaylist(id, token, mode, elem) {
 	})
 }
 
+function createRadio(token, selected, elem) {
+	const body = {
+		"playlist_id": selected.id,
+		"playlist_name": selected.name,
+	}
+	fetch(`${settings.SERVICE_URI}/radio`, {
+		method: 'POST',
+		headers: {"Authorization": "Bearer " + token},
+		body: JSON.stringify(body)
+	}).then((r) => {
+		elem.classList.remove('rotate');
+		return r.json()
+	})
+}
+
 function deleteLink(id, token) {
 	fetch(`${settings.SERVICE_URI}/playlist/` + id, {
 		method: 'DELETE',
@@ -36,4 +51,5 @@ export {
 	createLink,
 	deleteLink,
 	syncPlaylist,
+	createRadio
 }

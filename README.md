@@ -18,8 +18,17 @@ pipenv run uvicorn main:app --reload
 |GET    | /playlist/`<id>`/sync | # Get synchronization status for playlist|
 |PUT    | /playlist/`<id>`/sync | # Request synchronization of a playlist |
 
+
 # Publify.alpha Front
+## Local development
+``` npm run dev
+```
 
 # Publify.alpha Db
 
 # Publify.alpha Nginx
+
+
+# Deploy
+```docker-compose up --buid -d
+```

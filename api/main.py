@@ -76,9 +76,38 @@ class SyncInformation(BaseModel):
     public_name: str
     public: str
 
-@app.get('/')
-def read_root():
-    return {'Hello': 'World'}
+class RadioInformation(BaseModel):
+    playlist_id: str
+    playlist_name: str
+
+def getPlaylistIdfromName(playlist, usr_playlists):
+	for a in usr_playlists[0]:
+		if (a[0] == playlist):	
+			return(a[1])
+	return None
+
+@app.post('/radio')
+def read_radio(radio_info: RadioInformation, authorization: Optional[str] = Header(None)):
+    r = requests.get('https://api.spotify.com/v1/me', headers={'Authorization': authorization})
+    user = r.json()
+    user_id = user.get('id', None)
+    user_name = user.get('display_name', None)
+    if user_id is None or user_name is None:
+        raise HTTPException(status_code=400, detail="No profile found")
+    authorization_code = authorization.split(' ')[1]
+    usr = spdrv.User(token=authorization_code, id=user_id, name=user_name)
+    
+    watched_playlist = spdrv.Playlist(radio_info.playlist_id, usr)
+    usr.getPlaylists()
+    artists = watched_playlist.getArtistsIdInPlaylist(usr.id, radio_info.playlist_id)
+    albums_id = watched_playlist.getArtistsAlbums(artists)
+    dates = watched_playlist.getAlbumsReleaseDate(albums_id)
+    tracks = watched_playlist.getLastAlbums(7, dates)
+    if tracks == []:
+        print("no new songs")
+        return HTTPException(status_code=404, detail="No songs found")
+    watched_playlist.createReleasePlaylist(usr.id, radio_info.playlist_name, tracks)
+    return {'data': radio_info}
 
 
 @app.get('/playlist')
@@ -106,6 +135,10 @@ def read_playlists(authorization: Optional[str] = Header(None), db: Session = De
                 'name': b.name, 
                 'id': b.id
         } for b in usr.playlists['collaborative']],
+        'watched': [{
+                'name': b.name, 
+                'id': b.id
+        } for b in usr.playlists['watched']],
         'links': [
             {
                 'collaborative': {
