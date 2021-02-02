@@ -12,10 +12,12 @@ function Home() {
 	}, [user]);
 	if (user) {
 		return (
-			<main>
+			<main >
 				<h1>Use the tools here !</h1>
-				<a href="/radio">Radio</a>
-				<a href="/dashboard">Publify</a>
+				<div className={style.choice}>
+					<a className={style.tool} href="/radio">Radio</a>
+					<a className={style.tool} href="/dashboard">Publify</a>
+				</div>
 			</main>
 		);
 	}

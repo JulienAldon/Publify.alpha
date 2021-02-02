@@ -23,7 +23,7 @@ function Dashboard() {
 	const { isShowing, toggle } = useModal();
 	const { isShowingMessage, toggleMessage } = useMessage();
 	const authContext = useAuth();
-	
+
 	const getPlaylists = (url) => fetch(url, {
 		method: 'GET',
 		headers: {"Authorization": "Bearer " + authContext.token}
@@ -72,14 +72,14 @@ function Dashboard() {
 									description={messageDescription}
 								/>
 									<button onClick={ () => { 
-										setMessageTitle("Backward syncronization");
+										setMessageTitle("Backward synchronization");
 										setMessageDescription("This will change the collaborative playlist copying public tracks into collaborative playlist")
 										setMessageMode("backward")
 										toggleMessage();
 										
 									}} title="Copy content of public playlist into collaborative playlist (backup mode)"><i id={`backward${elem.id}`} class="material-icons">arrow_back</i></button>
 									<button onClick={ () => { 
-										setMessageTitle("Forward syncronization");
+										setMessageTitle("Forward synchronization");
 										setMessageDescription("This will change the public playlist copying collaborative tracks into public playlist.")
 										setMessageMode("forward")
 										toggleMessage();									

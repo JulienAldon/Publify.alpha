@@ -10,6 +10,19 @@ main {
     display: flex;
 }
 
+.choice {
+    justify-content: center;
+    flex-flow: row;
+    align-items: center;
+    display: flex;
+}
+
+.tool {
+    padding: 2rem;
+    margin: 1rem;
+    border:white solid 1px
+}
+
 footer {
     text-align: center;
     margin-top: 5rem;
