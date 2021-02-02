@@ -1,8 +1,10 @@
 import useSWR, { mutate } from 'swr'
-import { useEffect } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { useAuth } from '../../context/auth';
 import Modal from '../../components/modal';
+import Message from '../../components/message';
 import useModal from '../../hooks/useModal';
+import useMessage from '../../hooks/useMessage';
 import { syncPlaylist, deleteLink } from '../../api/';
 import useUser from '../../hooks/useUser';
 import { route } from 'preact-router';
@@ -18,9 +20,10 @@ function Dashboard() {
 	if (!user) 
 		return <main><h1>failed to load</h1></main>
 
-	const {isShowing, toggle} = useModal();
+	const { isShowing, toggle } = useModal();
+	const { isShowingMessage, toggleMessage } = useMessage();
 	const authContext = useAuth();
-
+	
 	const getPlaylists = (url) => fetch(url, {
 		method: 'GET',
 		headers: {"Authorization": "Bearer " + authContext.token}
@@ -37,6 +40,10 @@ function Dashboard() {
 		return <main><h1>failed to load</h1></main>
 	if (!data) 
 		return <main><h1>loading...</h1></main>
+
+	const [ messageMode, setMessageMode ] = useState("");
+	const [ messageTitle, setMessageTitle ] = useState("");
+	const [ messageDescription, setMessageDescription ] = useState("");
 	return (
 		<main>
 			<table>
@@ -55,13 +62,27 @@ function Dashboard() {
 								<td> {elem.collaborative.name} </td>
 								<td> {elem.public.name}</td>
 								<td class="item-actions actions">
+								<Message
+									isShowing={isShowingMessage}
+									hide={toggleMessage}
+									title={messageTitle}
+									token={authContext.token}
+									mode={messageMode}
+									element={elem}
+									description={messageDescription}
+								/>
 									<button onClick={ () => { 
-										document.getElementById("backward"+elem.id).classList.add("pending"); 
-										syncPlaylist(elem.id, authContext.token, "backward", document.getElementById("backward"+elem.id))
+										setMessageTitle("Backward syncronization");
+										setMessageDescription("This will change the collaborative playlist copying public tracks into collaborative playlist")
+										setMessageMode("backward")
+										toggleMessage();
+										
 									}} title="Copy content of public playlist into collaborative playlist (backup mode)"><i id={`backward${elem.id}`} class="material-icons">arrow_back</i></button>
 									<button onClick={ () => { 
-										document.getElementById("forward"+elem.id).classList.add("pending");
-										syncPlaylist(elem.id, authContext.token, "forward", document.getElementById("forward"+elem.id)) 
+										setMessageTitle("Forward syncronization");
+										setMessageDescription("This will change the public playlist copying collaborative tracks into public playlist.")
+										setMessageMode("forward")
+										toggleMessage();									
 									}} title="Copy content of collaborative playlist into public playlist (Synchronize mode)"><i id={`forward${elem.id}`} class="material-icons">arrow_forward</i></button>
 									<button onClick={ () => { 
 										document.getElementById("delete"+elem.id).classList.add("pending"); 
@@ -73,13 +94,14 @@ function Dashboard() {
 					)}
 				</tbody>
 			</table>
+			
 			<Modal
-				isShowing={isShowing}
-				hide={toggle}
-				data={data}
+				isShowing={ isShowing }
+				hide={ toggle }
+				data={ data }
 			/>
 			<footer class="actions">
-			<button id="new-button" onClick={toggle}><i class="material-icons" title="Add a new link">add_circle_outline</i></button>
+			<button id="new-button" onClick={ toggle }><i class="material-icons" title="Add a new link">add_circle_outline</i></button>
 			</footer>
 		</main>
 	);

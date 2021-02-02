@@ -158,9 +158,34 @@ def delete_playlist_sync(sync_id: int, db: Session = Depends(get_db)):
     return {'id': sync_id}
 
 
+def Diff(l1, l2):
+    return (list(list(set(l1) - set(l2)) + list(set(l2) - set(l1))))
+
 @app.get('/playlist/{sync_id}/sync')
-def read_sync_status(sync_id: int):
-    return {'id': sync_id}
+def read_sync_status(sync_id: int, authorization: Optional[str] = Header(None), db: Session = Depends(get_db), mode: Optional[str] = 'forward'):
+    r = requests.get('https://api.spotify.com/v1/me', headers={'Authorization': authorization})
+    user = r.json()
+    user_id = user.get('id', None)
+    user_name = user.get('display_name', None)
+    if user_id is None or user_name is None:
+        raise HTTPException(status_code=400, detail="No profile found")
+    p = get_sync_by_id(db, sync_id)
+    if p is None:
+        raise HTTPException(status_code=400, detail="Sync id does not exist")
+    authorization_code = authorization.split(' ')[1]
+    usr = spdrv.User(token=authorization_code, id=user_id, name=user_name)
+
+    public = spdrv.Playlist(p.public, usr, type="public")
+    public.getTracks()
+    collaborative = spdrv.Playlist(p.collaborative, usr, type="collaborative")
+    collaborative.getTracks()
+    print(public.id)
+    print(collaborative.tracks)
+    if mode == "forward":
+        trackDiff = Diff(collaborative.getTracksNames(), public.getTracksNames())
+    elif mode == "backward":
+        trackDiff = Diff(public.getTracksNames(), collaborative.getTracksNames())
+    return {'id': sync_id, 'collaborative_tracks': collaborative.getTracksNames(), 'public_tracks': public.getTracksNames(), 'diff': trackDiff}
 
 @app.put('/playlist/{sync_id}/sync')
 def sync_playlist(sync_id: int, authorization: Optional[str] = Header(None), db: Session = Depends(get_db), mode: Optional[str] = 'forward'):

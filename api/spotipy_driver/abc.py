@@ -106,3 +106,13 @@ class Playlist():
         Synchronize playlist with the one given as parametter
         """
         self.addTracks(playlist.tracks)
+
+    def getTracksNames(self):
+        """return list of names of the tracks of the playlist
+        """
+        if not self.tracks:
+            return []
+        result = []
+        for track in self.tracks:
+            result.append(track.getName())
+        return result

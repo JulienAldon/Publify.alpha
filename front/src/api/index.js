@@ -35,5 +35,5 @@ function deleteLink(id, token) {
 export {
 	createLink,
 	deleteLink,
-	syncPlaylist
+	syncPlaylist,
 }
