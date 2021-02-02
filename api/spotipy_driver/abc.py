@@ -74,9 +74,13 @@ class Playlist():
             if not i in tracksIds:
                 rem.append(i)
         if add:
-            self.user._client.user_playlist_add_tracks(self.user._client, self.id, add)
+            while add:
+                self.user._client.user_playlist_add_tracks(self.user._client, self.id, add[:100])
+                add = add[100:]
         if rem:
-            self.user._client.user_playlist_remove_all_occurrences_of_tracks(self.user._client, self.id, rem)
+            while rem:
+                self.user._client.user_playlist_remove_all_occurrences_of_tracks(self.user._client, self.id, rem[:100])
+                rem = rem[100:]
     
     def getTracks(self):
         """return a list of id for the tracks of the playlist
