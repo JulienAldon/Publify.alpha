@@ -1,14 +1,22 @@
 import { useAuth } from '../../context/auth';
 import useUser from '../../hooks/useUser';
+import useMessage from '../../hooks/useMessage';
+import Alert from '../../components/alert';
 import { useState, useEffect } from "preact/hooks";
 import style from './style.css';
 import useSWR from 'swr'
 import settings from '../../settings';
 import { createRadio } from '../../api';
+import Message from '../../components/message';
 
 function Radio() {
 	const [ selectedPlaylist, setSelectedPlaylist ] = useState({"name": "", "id": ""});
+	const [ message, setMessage ] = useState({"data": {}});
+	const [ loadingElem, setLoadingElem ] = useState();
+
+	const { isShowingMessage, toggleMessage } = useMessage();
 	const { user, mutate } = useUser();
+
 	if (!user)
 		return <main><h1>failed to load</h1></main>
 	
@@ -18,6 +26,13 @@ function Radio() {
 		}
 	}, [user]);
 	
+	useEffect(() => {
+		if (message.data.playlist_name !== undefined) {
+			toggleMessage();
+			loadingElem.classList.remove('rotate-infinite');
+		}
+	}, [message]);
+
 	const authContext = useAuth();
 
 	const getPlaylists = (url) => fetch(url, {
@@ -53,6 +68,12 @@ function Radio() {
 					}
 				</ul>
 			</form>
+			<Alert
+				isShowing={isShowingMessage}
+				hide={toggleMessage}
+				title="A new playlist has been created."
+				description={`The radio found ${message.data.tracks_number} new tracks released in the past ${message.data.date} days. And created the playlist ${message.data.playlist_name}`}
+			/>
 			<footer class="actions">
 				<button id="new-confirm-button" onClick={ () => {
 					const pls = document.getElementsByName("playlists")
@@ -62,8 +83,9 @@ function Radio() {
 					}
 					setSelectedPlaylist({"name": "", "id": ""})
 					const elem = document.getElementById("new-confirm-button")
-					elem.classList.add("rotate");
-					createRadio(authContext.token, selectedPlaylist, elem)
+					elem.classList.add("rotate-infinite");
+					createRadio(authContext.token, selectedPlaylist, setMessage)
+					setLoadingElem(elem);
 				}}><i id="add-btn" class="material-icons">add_circle_outline</i></button>
 			</footer>
 		</main>

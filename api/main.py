@@ -93,7 +93,7 @@ def read_radio(radio_info: RadioInformation, authorization: Optional[str] = Head
     user_id = user.get('id', None)
     user_name = user.get('display_name', None)
     if user_id is None or user_name is None:
-        raise HTTPException(status_code=400, detail="No profile found")
+        raise HTTPException(status_code=400, detail='No profile found')
     authorization_code = authorization.split(' ')[1]
     usr = spdrv.User(token=authorization_code, id=user_id, name=user_name)
     
@@ -104,10 +104,10 @@ def read_radio(radio_info: RadioInformation, authorization: Optional[str] = Head
     dates = watched_playlist.getAlbumsReleaseDate(albums_id)
     tracks = watched_playlist.getLastAlbums(7, dates)
     if tracks == []:
-        print("no new songs")
-        return HTTPException(status_code=404, detail="No songs found")
-    watched_playlist.createReleasePlaylist(usr.id, radio_info.playlist_name, tracks)
-    return {'data': radio_info}
+        print('no new songs')
+        return HTTPException(status_code=404, detail='No songs found')
+    created_name = watched_playlist.createReleasePlaylist(usr.id, radio_info.playlist_name, tracks)
+    return {'data': {'playlist_name': created_name, 'tracks_number': len(tracks), 'date': 7}}
 
 
 @app.get('/playlist')
@@ -118,7 +118,7 @@ def read_playlists(authorization: Optional[str] = Header(None), db: Session = De
     user_name = user.get('display_name', None)
     user_id = user.get('id', None)
     if user_name is None or user_id is None:
-        raise HTTPException(status_code=403, detail="Not connected")
+        raise HTTPException(status_code=403, detail='Not connected')
     authorization_code = authorization.split(' ')[1]
 
     usr = spdrv.User(token=authorization_code, id=user_id, name=user_name)
@@ -158,11 +158,11 @@ def create_playlist_sync(sync: SyncInformation, db: Session = Depends(get_db), a
     user = r.json()
     user_id = user.get('id', None)
     if user_id is None:
-        raise HTTPException(status_code=400, detail="User does not exist")
+        raise HTTPException(status_code=400, detail='User does not exist')
     db_user = get_user_by_spotify_id(db=db, spotify_id=user_id)
     # db_sync = get_sync_by_content(db, db_user.id, sync.collaborative, sync.public)
     # if db_sync:
-    #     raise HTTPException(status_code=400, detail="Sync Already exists")
+    #     raise HTTPException(status_code=400, detail='Sync Already exists')
     return create_user_sync(db=db, item=sync, user_id=db_user.id)
 
 
@@ -170,14 +170,14 @@ def create_playlist_sync(sync: SyncInformation, db: Session = Depends(get_db), a
 def read_playlist_info(sync_id: int, db: Session = Depends(get_db)):
     p = get_sync_by_id(db, sync_id)
     if p is None:
-        raise HTTPException(status_code=400, detail="Sync id does not exist")
+        raise HTTPException(status_code=400, detail='Sync id does not exist')
     return {'id': sync_id, 'collaborative': p.collaborative, 'public': p.public}
 
 @app.put('/playlist/{sync_id}')
 def update_playlist(sync_id: int, sync: SyncInformation, db: Session = Depends(get_db)):
     existing_sync = get_sync_by_id(db, sync_id)
     if existing_sync is None:
-        raise HTTPException(status_code=400, detail="Sync id does not exist")
+        raise HTTPException(status_code=400, detail='Sync id does not exist')
     existing_sync.collaborative = sync.collaborative
     existing_sync.public = sync.public
     return {'id': sync_id}
@@ -186,7 +186,7 @@ def update_playlist(sync_id: int, sync: SyncInformation, db: Session = Depends(g
 def delete_playlist_sync(sync_id: int, db: Session = Depends(get_db)):
     p = get_sync_by_id(db, sync_id)
     if p is None:
-        raise HTTPException(status_code=400, detail="Sync id does not exist")
+        raise HTTPException(status_code=400, detail='Sync id does not exist')
     delete_sync(db, sync_id)
     return {'id': sync_id}
 
@@ -201,22 +201,22 @@ def read_sync_status(sync_id: int, authorization: Optional[str] = Header(None), 
     user_id = user.get('id', None)
     user_name = user.get('display_name', None)
     if user_id is None or user_name is None:
-        raise HTTPException(status_code=400, detail="No profile found")
+        raise HTTPException(status_code=400, detail='No profile found')
     p = get_sync_by_id(db, sync_id)
     if p is None:
-        raise HTTPException(status_code=400, detail="Sync id does not exist")
+        raise HTTPException(status_code=400, detail='Sync id does not exist')
     authorization_code = authorization.split(' ')[1]
     usr = spdrv.User(token=authorization_code, id=user_id, name=user_name)
 
-    public = spdrv.Playlist(p.public, usr, type="public")
+    public = spdrv.Playlist(p.public, usr, type='public')
     public.getTracks()
-    collaborative = spdrv.Playlist(p.collaborative, usr, type="collaborative")
+    collaborative = spdrv.Playlist(p.collaborative, usr, type='collaborative')
     collaborative.getTracks()
     print(public.id)
     print(collaborative.tracks)
-    if mode == "forward":
+    if mode == 'forward':
         trackDiff = Diff(collaborative.getTracksNames(), public.getTracksNames())
-    elif mode == "backward":
+    elif mode == 'backward':
         trackDiff = Diff(public.getTracksNames(), collaborative.getTracksNames())
     return {'id': sync_id, 'collaborative_tracks': collaborative.getTracksNames(), 'public_tracks': public.getTracksNames(), 'diff': trackDiff}
 
@@ -227,24 +227,24 @@ def sync_playlist(sync_id: int, authorization: Optional[str] = Header(None), db:
     user_id = user.get('id', None)
     user_name = user.get('display_name', None)
     if user_id is None or user_name is None:
-        raise HTTPException(status_code=400, detail="No profile found")
+        raise HTTPException(status_code=400, detail='No profile found')
 
     p = get_sync_by_id(db, sync_id)
     if p is None:
-        raise HTTPException(status_code=400, detail="Sync id does not exist")
+        raise HTTPException(status_code=400, detail='Sync id does not exist')
 
     authorization_code = authorization.split(' ')[1]
     usr = spdrv.User(token=authorization_code, id=user_id, name=user_name)
 
-    public = spdrv.Playlist(p.public, usr, type="public")
+    public = spdrv.Playlist(p.public, usr, type='public')
     public.getTracks()
-    collaborative = spdrv.Playlist(p.collaborative, usr, type="collaborative")
+    collaborative = spdrv.Playlist(p.collaborative, usr, type='collaborative')
     collaborative.getTracks()
     print(public.id)
     print(collaborative.id)
-    if mode == "forward":
+    if mode == 'forward':
         public.sync(collaborative)
-    elif mode == "backward":
+    elif mode == 'backward':
         collaborative.sync(public)     
     return {'id': sync_id}
 
@@ -290,5 +290,5 @@ def read_user(authorization: Optional[str] = Header(None)):
     user_name = user.get('display_name', None)
     print(user)
     if user_id is None or user_name is None:
-        raise HTTPException(status_code=403, detail="No profile found, authorization token no more valid.")
+        raise HTTPException(status_code=403, detail='No profile found, authorization token no more valid.')
     return {'username': user_name, 'id': user_id}

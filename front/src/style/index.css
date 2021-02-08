@@ -201,6 +201,10 @@ main table th:last-child, main table td.item-actions.actions {
 	/* display: block; */
 }
 
+.rotate-infinite {
+	animation: rotation 2s infinite;
+}
+
 @keyframes rotation {
 	from {
 		transform: rotate(0deg);

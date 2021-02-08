@@ -1,3 +1,4 @@
+import { cpuUsage } from "process";
 import { mutate } from "swr"
 import settings from '../settings';
 function createLink(token, body) {
@@ -22,7 +23,7 @@ function syncPlaylist(id, token, mode, elem) {
 	})
 }
 
-function createRadio(token, selected, elem) {
+function createRadio(token, selected, setMessage) {
 	const body = {
 		"playlist_id": selected.id,
 		"playlist_name": selected.name,
@@ -32,8 +33,10 @@ function createRadio(token, selected, elem) {
 		headers: {"Authorization": "Bearer " + token},
 		body: JSON.stringify(body)
 	}).then((r) => {
-		elem.classList.remove('rotate');
 		return r.json()
+	}).then(data => {
+		console.log(data.data);
+		setMessage(data);
 	})
 }
 

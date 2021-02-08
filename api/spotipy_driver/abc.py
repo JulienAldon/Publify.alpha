@@ -190,6 +190,7 @@ class Playlist():
         while tracks:
             results = self.user._client.user_playlist_add_tracks(user_id, playlist['id'], tracks[:100])
             tracks = tracks[100:]
+        return b
 
     def sortAlbumsByDate(self, albums_date):
         """
