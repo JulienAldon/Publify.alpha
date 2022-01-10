@@ -2,7 +2,7 @@
 import process from 'process';
 let settings = {
     ROOT_FQDN: "",
-    SERVICE_URI: "" 
+    SERVICE_URI: ""
 }
 // "process.env.REACT_APP_ENV"
 switch (process.env.REACT_APP_ENV) {

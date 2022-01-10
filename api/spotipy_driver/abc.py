@@ -17,17 +17,11 @@ class User():
         for playlist in playlists['items']:
             if playlist['owner']['id'] == self.id:
                 if playlist['collaborative'] == True:
-                    self.playlists['collaborative'].append(Playlist(playlist['id'], self, type="collaborative"))
+                    self.playlists['collaborative'].append(Playlist(playlist['id'], self, url=playlist['images'], type="collaborative"))
                 else:
-                    self.playlists['public'].append(Playlist(playlist['id'], self, type="public"))
+                    self.playlists['public'].append(Playlist(playlist['id'], self, url=playlist['images'], type="public"))
             else:
-                self.playlists['watched'].append(Playlist(playlist['id'], self, type='watched'))
-
-
-# class User(BaseUser):
- 
-
-        # return ()
+                self.playlists['watched'].append(Playlist(playlist['id'], self, url=playlist['images'], type='watched'))
 
 class Track():
     """abc class representing a track
@@ -47,12 +41,13 @@ class Track():
 class Playlist():
     """abc class representing a playlist
     """
-    def __init__(self, _id, user, type="public"):
+    def __init__(self, _id, user, url="None", type="public"):
         self.user = user
         self.type = type
         self.id = _id
         self.tracks = None
         self.name = self.getName()
+        self.image_url = url
 
 
     def getName(self):
@@ -137,7 +132,8 @@ class Playlist():
         albums_id = []
         albums = []
         for a in artists_id:
-            albums.append(self.user._client.artist_albums(a, limit=5))
+            if a:
+                albums.append(self.user._client.artist_albums(a, limit=5))
         for album in albums:
             for al in album['items']:
                 albums_id.append(al)

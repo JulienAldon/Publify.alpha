@@ -5,12 +5,12 @@ import { useAuth } from '../../context/auth'
 import useUser from '../../hooks/useUser';
 import Cookies from 'js-cookie';
 import { useEffect, useReducer } from 'preact/hooks';
-import { mutate } from 'swr'
+import { mutate } from 'swr';
 import { route } from 'preact-router';
 import settings from '../../settings';
 
 function logout() {
-	Cookies.remove('userToken', { domain: `.${settings.ROOT_FQDN}` });
+	Cookies.remove('userToken', { domain: `.${settings.ROOT_FQDN}`});
 	route('/');
 }
 function login() {
@@ -24,7 +24,7 @@ function Header() {
 	useEffect(() => {
 		const params = new URLSearchParams(window.location.search)
 		if (params.get("token")) {
-			Cookies.set('userToken', params.get("token"), { domain: `.${settings.ROOT_FQDN}`});
+			Cookies.set('userToken', params.get("token"), { domain: `.${settings.ROOT_FQDN}`, secure: true});
 			authContext.token = Cookies.get('userToken', { domain: `.${settings.ROOT_FQDN}`});
 		}
 	});

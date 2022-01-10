@@ -8,20 +8,21 @@ pipenv run uvicorn main:app --reload
 ```
 
 ## API
-| rule  |      route          |   description                           |
---------|---------------------|-----------------------------------------| 
-|GET    | /playlist           | # Return a playlist list                |
-|POST   | /playlist           | # Create a new playlist synchronization |
-|GET    | /playlist/`<id>`      | # Return a playlist's information       |
-|PUT    | /playlist/`<id>`      | # Update a playlist link                    |
-|DELETE | /playlist/`<id>`      | # Remove a synchronization link         |
-|GET    | /playlist/`<id>`/sync | # Get synchronization status for playlist|
-|PUT    | /playlist/`<id>`/sync | # Request synchronization of a playlist |
+| rule  |      route            |   description                             |
+--------|-----------------------|-------------------------------------------| 
+|GET    | /playlist             | # Return a playlist list                  |
+|GET    | /playlist/`<id>`      | # Return a playlist's link information    |
+|GET    | /playlist/`<id>`/sync | # Get synchronization status for playlist |
+|PUT    | /playlist/`<id>`      | # Update a playlist link                  |
+|PUT    | /playlist/`<id>`/sync | # Request synchronization of a playlist   |
+|POST   | /playlist             | # Create a new playlist synchronization   |
+|DELETE | /playlist/`<id>`      | # Remove a synchronization link           |
 
 
 # Publify.alpha Front
 ## Local development
-``` npm run dev
+```
+npm run dev
 ```
 
 # Publify.alpha Db
@@ -30,5 +31,6 @@ pipenv run uvicorn main:app --reload
 
 
 # Deploy
-```docker-compose up --buid -d
+```
+docker-compose up --buid -d
 ```

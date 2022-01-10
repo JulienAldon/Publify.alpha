@@ -6,19 +6,21 @@ import { useState, useEffect } from "preact/hooks";
 import style from './style.css';
 import useSWR from 'swr'
 import settings from '../../settings';
-import { createRadio } from '../../api';
-import Message from '../../components/message';
+import { createRadio, getPlaylists } from '../../api';
+import Loader from '../../components/loader';
+import LoadError from '../../components/loadError';
 
 function Radio() {
 	const [ selectedPlaylist, setSelectedPlaylist ] = useState({"name": "", "id": ""});
 	const [ message, setMessage ] = useState({"data": {}});
 	const [ loadingElem, setLoadingElem ] = useState();
-
+	const [ txtFormatTitle , setTxtFormatTitle ] = useState();
+	const [ txtFormatDescr , setTxtFormatDescr ] = useState();
 	const { isShowingMessage, toggleMessage } = useMessage();
 	const { user, mutate } = useUser();
 
 	if (!user)
-		return <main><h1>failed to load</h1></main>
+		return <LoadError></LoadError>
 	
 	useEffect(() => {
 		if (!user) {
@@ -27,30 +29,37 @@ function Radio() {
 	}, [user]);
 	
 	useEffect(() => {
-		if (message.data.playlist_name !== undefined) {
+		if (message.data.playlist_name !== undefined || message.data.data) {
 			toggleMessage();
 			loadingElem.classList.remove('rotate-infinite');
+			loadingElem.lastElementChild.classList.remove("pending");
+			loadingElem.lastElementChild.classList.add("success");
+			setTxtFormatTitle("A new playlist has been created.");
+			setTxtFormatDescr(`The radio found ${message.data.tracks_number} new tracks released in the past ${message.data.date} days. And created the playlist ${message.data.playlist_name}`);
+			setTimeout(function(loadingElem) {
+				loadingElem.lastElementChild.classList.remove("success");
+			}, 3000, loadingElem);
+		} else if (message.data.error) {
+			toggleMessage();
+			loadingElem.classList.remove('rotate-infinite');
+			loadingElem.lastElementChild.classList.remove("pending");
+			loadingElem.lastElementChild.classList.add("warning");
+			setTxtFormatTitle(`${message.data.error}`);
+			setTxtFormatDescr(`The spotils radio utility could not define new songs from this playlist. Problem: ${message.data.error}`);
+			setTimeout(function(loadingElem) {
+				loadingElem.lastElementChild.classList.remove("warning");
+			}, 3000, loadingElem);
 		}
 	}, [message]);
 
 	const authContext = useAuth();
 
-	const getPlaylists = (url) => fetch(url, {
-		method: 'GET',
-		headers: {"Authorization": "Bearer " + authContext.token}
-	}).then((r) => {
-		return r.json()
-	}).catch(err => {
-		const error = new Error("Not authorized!");
-        error.status = 403;
-        throw error;
-	})
-	const { data, error } = useSWR(`${settings.SERVICE_URI}/playlist`, getPlaylists)
+	const { data, error } = useSWR([`${settings.SERVICE_URI}/playlist`, authContext.token], getPlaylists)
 
 	if (error) 
-		return <main><h1>failed to load</h1></main>
+		return <LoadError></LoadError>
 	if (!data) 
-		return <main><h1>loading...</h1></main>
+		return <Loader></Loader>
 	const playlists = data.result.collaborative.concat(data.result.public, data.result.watched)
 
 	return (
@@ -71,10 +80,10 @@ function Radio() {
 			<Alert
 				isShowing={isShowingMessage}
 				hide={toggleMessage}
-				title="A new playlist has been created."
-				description={`The radio found ${message.data.tracks_number} new tracks released in the past ${message.data.date} days. And created the playlist ${message.data.playlist_name}`}
+				title={txtFormatTitle}
+				description={txtFormatDescr}
 			/>
-			<footer class="actions">
+			<footer class="item-actions-radio actions-radio">
 				<button id="new-confirm-button" onClick={ () => {
 					const pls = document.getElementsByName("playlists")
 					var i;
@@ -84,7 +93,8 @@ function Radio() {
 					setSelectedPlaylist({"name": "", "id": ""})
 					const elem = document.getElementById("new-confirm-button")
 					elem.classList.add("rotate-infinite");
-					createRadio(authContext.token, selectedPlaylist, setMessage)
+					elem.lastElementChild.classList.add("pending");
+					createRadio(authContext.token, selectedPlaylist, setMessage);
 					setLoadingElem(elem);
 				}}><i id="add-btn" class="material-icons">add_circle_outline</i></button>
 			</footer>

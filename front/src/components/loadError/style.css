@@ -1,0 +1,12 @@
+.lds {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    padding-top: 5rem;
+}
+
+.lds:hover {
+    color: white;
+	text-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.7);
+}

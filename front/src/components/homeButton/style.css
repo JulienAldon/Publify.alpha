@@ -1,0 +1,29 @@
+.tool {
+    text-align: center;
+    background-color: rgba(0,0,0,0.5);
+    margin: 1rem;
+    font-size: 1.5rem;
+    display: flex;
+    flex-flow: column;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+    flex: 1 1 0;
+    box-shadow: .5rem .5rem 1rem rgba(0,0,0,0.5);
+}
+
+.tool:hover {
+    background-color: rgba(107, 70, 70, 0.4);
+    box-shadow: .5rem .5rem 1rem rgba(107,70,70,0.4);
+}
+
+.icone {
+    text-decoration: none;
+    outline: none;
+}
+
+@media (max-width: 62rem) {
+    .tool {
+        align-self: stretch;
+        text-align: center;   
+    }
+}

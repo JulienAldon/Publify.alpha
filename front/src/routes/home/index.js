@@ -2,29 +2,54 @@ import { h } from 'preact';
 import style from './style.css';
 
 import { useEffect } from "react";
-import {route} from 'preact-router';
+import { route } from 'preact-router';
 import useUser from '../../hooks/useUser';
+import HomeButton from '../../components/homeButton';
+import settings from '../../settings';
+import Loader from '../../components/loader';
 
 function Home() {
-	const { user, mutate } = useUser();
+	const { loading, user, mutate } = useUser();
+
+	function login() {
+		window.location.replace(`${settings.SERVICE_URI}/api/auth/login`);
+	}
 	
 	useEffect(() => {
 	}, [user]);
+
 	if (user) {
 		return (
-			<main >
-				<h1>Use the tools here !</h1>
+			<section className={style.content}>
+				<h1 className={style.title}>Welcome to Spotils</h1>
 				<div className={style.choice}>
-					<a className={style.tool} href="/radio">Radio</a>
-					<a className={style.tool} href="/dashboard">Publify</a>
+					<HomeButton 
+						link="/radio"
+						icon='fas fa-broadcast-tower'
+						title='Radio'
+					/>
+					<HomeButton 
+						link="/dashboard"
+						icon='fas fa-search'
+						title='Dashboard'
+					/>
+					<HomeButton 
+						link="/analytics"
+						icon='fas fa-chart-line'
+						title='Analytics'
+					/>
 				</div>
-			</main>
+			</section>
 		);
+	}
+	if (loading) {
+		return <Loader></Loader>
 	}
 	return (
 		<main>
-			<h1>Welcome to publify</h1>
+			<h1 className={style.title}>Welcome to Spotils</h1>
 			<h2 style="text-align:center;">Login with spotify to use the tools.</h2>
+			<button className={style.loginButton} onClick={login}>Login</button>
 		</main>
 	);
 }

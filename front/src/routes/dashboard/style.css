@@ -1,0 +1,34 @@
+.lds {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.nothing {
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 2rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.item {
+    transition: opacity 1.5s ease;
+}
+
+.playlistName {
+    cursor: pointer;
+}
+.playlistName:hover {
+    color: #80BFFF;
+    text-shadow: 0 0 0.5rem #80BFFF;
+}
+
+.playlistImage {
+    height: 2rem;
+    /* width: 2rem; */
+    padding-left: 1rem;
+    align-self: center;
+    justify-content: center;
+}

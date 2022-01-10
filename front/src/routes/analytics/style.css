@@ -1,29 +1,45 @@
 main {
-    color: white;
+	color: white;
 	flex-basis: 50%;
     flex-shrink: 1;
-    margin: 0px;
 
     overflow: hidden;
 	/* white-space: nowrap; */
     text-overflow: ellipsis;
     display: flex;
 }
+
+main {
+    color: white;
+	flex-basis: 50%;
+    flex-shrink: 1;
+    margin: 5rem;
+
+    overflow: hidden;
+	/* white-space: nowrap; */
+    text-overflow: ellipsis;
+    display: flex;
+    min-height:30rem;
+    /* max-height: 70rem;  */
+}
 form ul {
     overflow: auto;
     padding: 0;
 }
-
 main h1 {
     margin: 0px;
     padding: 0.75rem;
 	text-align: center;
 }
-
 form li {
     list-style: none;
     display: flex;
-    flex-flow: column;
+    flex-flow: row;
+}
+
+form button {
+    margin-left: auto;
+    margin-right: 1rem;
 }
 
 form label {
@@ -55,20 +71,34 @@ form {
     flex-shrink: 0;
     align-items: stretch;
     flex-flow: column;
-    overflow: hidden;
+    overflow: scroll;
     flex: 1 1 auto;
+    max-height: 30rem;
 }
 
 form li input {
     display: none;
 }
 
-form li:nth-child(2n) {
-    background-color: rgba(10,10, 10, 0.3);
-}
-
-
 form li input:checked + label {
     background: rgba(255, 255, 255, 0.7);
     color: rgba(22,22,22,1)
+}
+
+.analytic {
+    display: flex;
+    flex-flow: row;
+}
+
+button:hover {
+    color: white;
+	text-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 62rem) {
+    .analytic {
+        /* align-self: stretch;
+        text-align: center;    */
+        flex-flow: column;
+    }
 }

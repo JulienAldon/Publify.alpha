@@ -25,15 +25,20 @@
     "jest": "^24.9.0",
     "jest-preset-preact": "^1.0.0",
     "preact-cli": "^3.0.0",
+    "sass-loader": "^8.0.2",
     "sirv-cli": "1.0.3"
   },
   "dependencies": {
     "js-cookie": "^2.2.1",
+    "node-sass": "^4.14.1",
     "preact": "^10.3.2",
+    "preact-head": "^1.0.3",
     "preact-render-to-string": "^5.1.4",
     "preact-router": "^3.2.1",
     "process": "^0.11.10",
     "react-cookie": "^4.0.3",
+    "react-spring": "^9.3.3",
+    "react-transition-group": "^4.4.2",
     "swr": "^0.4.0"
   },
   "jest": {

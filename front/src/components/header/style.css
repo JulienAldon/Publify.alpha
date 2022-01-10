@@ -11,6 +11,7 @@ header a:focus {
 	color: white;
 	text-shadow: 0 0 0.5rem rgba(255, 255, 255, 1);
 }
+
 button {
 	background: none;
 	border: none;
@@ -73,8 +74,6 @@ header h1 {
 	padding: 0.5rem 0.75rem;
 }
 
-
-
 header a:hover {
 	color: white;
 	text-shadow: 0 0 0.5rem rgba(255, 255, 255, 1);
@@ -88,4 +87,15 @@ header h1 a:hover {
 header h1 a {
 	font-size: 2rem;
 	padding: 0;
+}
+
+@media (max-width: 34rem) {
+	header, header aside {
+		flex-flow: column;
+		text-align: center;
+		justify-content: center;
+	}
+	header a {
+		padding: .2rem 0.75rem;
+	}
 }

@@ -12,7 +12,7 @@ export const AuthContext = createContext(authContextTemplate);
 function useAuth() {
     const context = useContext(AuthContext)
     if (AuthContext === undefined) {
-        throw new Error ('Context Provider is missuing')
+        throw new Error ('Context Provider is missing')
     }
     return context
 }

@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from fastapi import FastAPI, Header, Depends, HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -13,6 +13,7 @@ from database import SessionLocal, engine
 from models import Base
 from crud import *
 from schemas import *
+from secrets import origins, REDIRECT, ROOT_FQDN, CLIENT_ID, CLIENT_SECRET, SCOPES
 
 Base.metadata.create_all(bind=engine)
 
@@ -22,36 +23,16 @@ import base64
 
 app = FastAPI()
 
-if os.getenv('FASTAPI_ENV') == 'prod':
-    origins = [
-        'https://publify.aldon.info',
-        'https://auth.publify.aldon.info',
-    ]
+SPOTIFY_API_ME = "https://api.spotify.com/v1/me"
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=['*'],
-        allow_headers=['*'],
-    )
-    REDIRECT  = 'https://auth.publify.aldon.info/api/auth/authorized'
-    ROOT_FQDN = 'https://publify.aldon.info'
-else:
-    origins = [
-        'http://localhost',
-        'http://localhost:8080',
-    ]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=['*'],
-        allow_headers=['*'],
-    )
-    REDIRECT  = 'https://xxx.localhost/api/auth/authorized'
-    ROOT_FQDN = 'http://localhost:8080'
 
 def get_db():
     db = SessionLocal()
@@ -59,16 +40,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
-CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
-SCOPES    = '+'.join((
-  'playlist-read-private',
-  'playlist-modify-private',
-  'playlist-modify-public',
-  'playlist-read-collaborative',
-))
-
 
 class SyncInformation(BaseModel):
     collaborative_name: str
@@ -87,8 +58,8 @@ def getPlaylistIdfromName(playlist, usr_playlists):
 	return None
 
 @app.post('/radio')
-def read_radio(radio_info: RadioInformation, authorization: Optional[str] = Header(None)):
-    r = requests.get('https://api.spotify.com/v1/me', headers={'Authorization': authorization})
+async def read_radio(radio_info: RadioInformation, authorization: Optional[str] = Header(None)):
+    r = requests.get(SPOTIFY_API_ME, headers={'Authorization': authorization})
     user = r.json()
     user_id = user.get('id', None)
     user_name = user.get('display_name', None)
@@ -96,7 +67,8 @@ def read_radio(radio_info: RadioInformation, authorization: Optional[str] = Head
         raise HTTPException(status_code=400, detail='No profile found')
     authorization_code = authorization.split(' ')[1]
     usr = spdrv.User(token=authorization_code, id=user_id, name=user_name)
-    
+    if not radio_info or not radio_info.playlist_id or not radio_info.playlist_name:
+        raise HTTPException(status_code=400, detail='No playlist selected')
     watched_playlist = spdrv.Playlist(radio_info.playlist_id, usr)
     usr.getPlaylists()
     artists = watched_playlist.getArtistsIdInPlaylist(usr.id, radio_info.playlist_id)
@@ -109,10 +81,9 @@ def read_radio(radio_info: RadioInformation, authorization: Optional[str] = Head
     created_name = watched_playlist.createReleasePlaylist(usr.id, radio_info.playlist_name, tracks)
     return {'data': {'playlist_name': created_name, 'tracks_number': len(tracks), 'date': 7}}
 
-
 @app.get('/playlist')
-def read_playlists(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
-    r = requests.get('https://api.spotify.com/v1/me', headers={'Authorization': authorization})
+async def read_playlists(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
+    r = requests.get(SPOTIFY_API_ME, headers={'Authorization': authorization})
     user = r.json()
     print(authorization)
     user_name = user.get('display_name', None)
@@ -129,11 +100,14 @@ def read_playlists(authorization: Optional[str] = Header(None), db: Session = De
     result = {
         'public': [{
             'name': a.name,
-            'id' : a.id
+            'id' : a.id,
+            'imgurl': a.image_url
         } for a in usr.playlists['public']],
         'collaborative': [{
                 'name': b.name, 
-                'id': b.id
+                'id': b.id,
+                'imgurl': b.image_url
+
         } for b in usr.playlists['collaborative']],
         'watched': [{
                 'name': b.name, 
@@ -153,8 +127,8 @@ def read_playlists(authorization: Optional[str] = Header(None), db: Session = De
     return {'result': result}
 
 @app.post('/playlist')
-def create_playlist_sync(sync: SyncInformation, db: Session = Depends(get_db), authorization: Optional[str] = Header(None)):
-    r = requests.get('https://api.spotify.com/v1/me', headers={'Authorization': authorization})
+async def create_playlist_sync(sync: SyncInformation, db: Session = Depends(get_db), authorization: Optional[str] = Header(None)):
+    r = requests.get(SPOTIFY_API_ME, headers={'Authorization': authorization})
     user = r.json()
     user_id = user.get('id', None)
     if user_id is None:
@@ -167,14 +141,14 @@ def create_playlist_sync(sync: SyncInformation, db: Session = Depends(get_db), a
 
 
 @app.get('/playlist/{sync_id}')
-def read_playlist_info(sync_id: int, db: Session = Depends(get_db)):
+async def read_playlist_info(sync_id: int, db: Session = Depends(get_db)):
     p = get_sync_by_id(db, sync_id)
     if p is None:
         raise HTTPException(status_code=400, detail='Sync id does not exist')
     return {'id': sync_id, 'collaborative': p.collaborative, 'public': p.public}
 
 @app.put('/playlist/{sync_id}')
-def update_playlist(sync_id: int, sync: SyncInformation, db: Session = Depends(get_db)):
+async def update_playlist(sync_id: int, sync: SyncInformation, db: Session = Depends(get_db)):
     existing_sync = get_sync_by_id(db, sync_id)
     if existing_sync is None:
         raise HTTPException(status_code=400, detail='Sync id does not exist')
@@ -183,7 +157,7 @@ def update_playlist(sync_id: int, sync: SyncInformation, db: Session = Depends(g
     return {'id': sync_id}
 
 @app.delete('/playlist/{sync_id}')
-def delete_playlist_sync(sync_id: int, db: Session = Depends(get_db)):
+async def delete_playlist_sync(sync_id: int, db: Session = Depends(get_db)):
     p = get_sync_by_id(db, sync_id)
     if p is None:
         raise HTTPException(status_code=400, detail='Sync id does not exist')
@@ -195,8 +169,8 @@ def Diff(l1, l2):
     return (list(list(set(l1) - set(l2)) + list(set(l2) - set(l1))))
 
 @app.get('/playlist/{sync_id}/sync')
-def read_sync_status(sync_id: int, authorization: Optional[str] = Header(None), db: Session = Depends(get_db), mode: Optional[str] = 'forward'):
-    r = requests.get('https://api.spotify.com/v1/me', headers={'Authorization': authorization})
+async def read_sync_status(sync_id: int, authorization: Optional[str] = Header(None), db: Session = Depends(get_db), mode: Optional[str] = 'forward'):
+    r = requests.get(SPOTIFY_API_ME, headers={'Authorization': authorization})
     user = r.json()
     user_id = user.get('id', None)
     user_name = user.get('display_name', None)
@@ -212,8 +186,6 @@ def read_sync_status(sync_id: int, authorization: Optional[str] = Header(None), 
     public.getTracks()
     collaborative = spdrv.Playlist(p.collaborative, usr, type='collaborative')
     collaborative.getTracks()
-    print(public.id)
-    print(collaborative.tracks)
     if mode == 'forward':
         trackDiff = Diff(collaborative.getTracksNames(), public.getTracksNames())
     elif mode == 'backward':
@@ -221,8 +193,8 @@ def read_sync_status(sync_id: int, authorization: Optional[str] = Header(None), 
     return {'id': sync_id, 'collaborative_tracks': collaborative.getTracksNames(), 'public_tracks': public.getTracksNames(), 'diff': trackDiff}
 
 @app.put('/playlist/{sync_id}/sync')
-def sync_playlist(sync_id: int, authorization: Optional[str] = Header(None), db: Session = Depends(get_db), mode: Optional[str] = 'forward'):
-    r = requests.get('https://api.spotify.com/v1/me', headers={'Authorization': authorization})
+async def sync_playlist(sync_id: int, authorization: Optional[str] = Header(None), db: Session = Depends(get_db), mode: Optional[str] = 'forward'):
+    r = requests.get(SPOTIFY_API_ME, headers={'Authorization': authorization})
     user = r.json()
     user_id = user.get('id', None)
     user_name = user.get('display_name', None)
@@ -240,8 +212,6 @@ def sync_playlist(sync_id: int, authorization: Optional[str] = Header(None), db:
     public.getTracks()
     collaborative = spdrv.Playlist(p.collaborative, usr, type='collaborative')
     collaborative.getTracks()
-    print(public.id)
-    print(collaborative.id)
     if mode == 'forward':
         public.sync(collaborative)
     elif mode == 'backward':
@@ -249,11 +219,11 @@ def sync_playlist(sync_id: int, authorization: Optional[str] = Header(None), db:
     return {'id': sync_id}
 
 @app.get('/api/auth/login')
-def spotify_api_login():
+async def spotify_api_login():
     return RedirectResponse(f'https://accounts.spotify.com/authorize?response_type=code&client_id={CLIENT_ID}&scope={SCOPES}&redirect_uri={REDIRECT}')
 
 @app.get('/api/auth/authorized')
-def spotify_api_autorized(code: Optional[str] = None, db: Session = Depends(get_db)):
+async def spotify_api_autorized(code: Optional[str] = None, db: Session = Depends(get_db)):
     payload = {
         'grant_type': 'authorization_code',
         'code': code,
@@ -269,7 +239,7 @@ def spotify_api_autorized(code: Optional[str] = None, db: Session = Depends(get_
     token = res.get('access_token', None)
     if token is None:
         return RedirectResponse(f'{ROOT_FQDN}?token=None')
-    me = requests.get('https://api.spotify.com/v1/me', headers={'Authorization': 'Bearer ' + token})
+    me = requests.get(SPOTIFY_API_ME, headers={'Authorization': 'Bearer ' + token})
     res = me.json()
     db_user = get_user_by_spotify_id(db, spotify_id=res['id'])
     if db_user:
@@ -283,12 +253,49 @@ def spotify_api_autorized(code: Optional[str] = None, db: Session = Depends(get_
 
 
 @app.get('/api/auth/user')
-def read_user(authorization: Optional[str] = Header(None)):
-    r = requests.get('https://api.spotify.com/v1/me', headers={'Authorization': authorization})
+async def read_user(authorization: Optional[str] = Header(None)):
+    r = requests.get(SPOTIFY_API_ME, headers={'Authorization': authorization})
     user = r.json()
     user_id = user.get('id', None)
     user_name = user.get('display_name', None)
-    print(user)
     if user_id is None or user_name is None:
         raise HTTPException(status_code=403, detail='No profile found, authorization token no more valid.')
     return {'username': user_name, 'id': user_id}
+
+"""
+tracks_info: list of dicts of all tracks informations
+authorization: token
+"""
+def get_contributors(tracks_info, authorization):
+    contributors_id = list(set([elem['added_by']['id'] for elem in tracks_info]))
+    contributors = {elem: requests.get(f'https://api.spotify.com/v1/users/{elem}', headers={'Authorization': authorization}).json()['display_name'] for elem in contributors_id}
+    return contributors
+
+@app.get('/playlist/{playlist_id}/graph')
+async def create_playlist_graph(playlist_id:str, authorization: Optional[str] = Header(None)):
+    r = requests.get(SPOTIFY_API_ME, headers={'Authorization': authorization})
+    user = r.json()
+    user_id = user.get('id', None)
+    user_name = user.get('display_name', None)
+    if user_id is None or user_name is None:
+        raise HTTPException(status_code=400, detail='No profile found')
+    tracks = requests.get(f'https://api.spotify.com/v1/playlists/{playlist_id}', headers={'Authorization': authorization})
+    tracks_info = tracks.json()['tracks']['items']
+    contributors = get_contributors(tracks_info, authorization)
+    tracks_dict = {}
+    new_dict = {}
+    for elem in tracks_info:
+        tracks_dict.setdefault(elem['added_at'][:7], {})
+        current_contrib = contributors[elem['added_by']['id']]
+        tracks_dict[elem['added_at'][:7]].setdefault(current_contrib, {})
+        tracks_dict[elem['added_at'][:7]][current_contrib] = {
+            'id': elem['added_by']['id'],
+        }
+        tracks_dict[elem['added_at'][:7]][current_contrib].setdefault('tracks', [])
+        # print(new_dict[current_contrib]['tracks'], current_contrib)
+        tracks_dict[elem['added_at'][:7]][current_contrib]['tracks'].append({
+            'id': elem['track']['id'],
+            'name': elem['track']['name']
+        })
+        # tracks_dict[elem['added_at'][:7]] = new_dict
+    return {'data': tracks_dict}

@@ -2,7 +2,7 @@ main {
 	color: white;
 	flex-basis: 50%;
     flex-shrink: 1;
-    margin: 0px;
+    /* margin: 0px; */
 
     overflow: hidden;
 	/* white-space: nowrap; */
@@ -12,15 +12,10 @@ main {
 
 .choice {
     justify-content: center;
+    flex: 1 1 auto;
     flex-flow: row;
     align-items: center;
     display: flex;
-}
-
-.tool {
-    padding: 2rem;
-    margin: 1rem;
-    border:white solid 1px
 }
 
 footer {
@@ -28,10 +23,19 @@ footer {
     margin-top: 5rem;
 }
 
-h1 {
+.title {
     margin: 0px;
     padding: 0.75rem;
 	text-align: center;
+    color: white;
+}
+
+.loginButton:hover {
+    color: #1ED760;
+}
+
+.loginButton {
+    font-size: 2rem;
 }
 
 article h2, article p {
@@ -39,4 +43,18 @@ article h2, article p {
     padding: 0.75rem;
     text-align: justify;
     width: 50%;
+}
+
+div a i {
+    padding: 0.5rem;
+}
+
+@media (max-width: 62rem) {
+    .choice {
+        justify-content: center;
+        flex: 1 1 auto;
+        flex-flow: column;
+        align-items: center;
+        display: flex;       
+    }
 }

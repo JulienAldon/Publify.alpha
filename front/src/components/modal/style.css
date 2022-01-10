@@ -89,6 +89,7 @@ dialog form li input {
     display: none;
 }
 
-dialog form li input:checked + label {
+/* dialog form li input:checked + label {
     background: rgba(255, 255, 255, 0.7);
-}
+    color: rgba(11, 11, 11, 1);
+} */
