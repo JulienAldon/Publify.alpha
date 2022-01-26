@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy.orm import Session
 
@@ -18,6 +18,7 @@ from secrets import origins, REDIRECT, ROOT_FQDN, CLIENT_ID, CLIENT_SECRET, SCOP
 Base.metadata.create_all(bind=engine)
 
 import requests
+import json
 import os
 import base64
 
@@ -80,6 +81,17 @@ async def read_radio(radio_info: RadioInformation, authorization: Optional[str] 
         return HTTPException(status_code=404, detail='No songs found')
     created_name = watched_playlist.createReleasePlaylist(usr.id, radio_info.playlist_name, tracks)
     return {'data': {'playlist_name': created_name, 'tracks_number': len(tracks), 'date': 7}}
+
+@app.get('/playlist-info/{spot_playlist_id}')
+async def playlist_info(spot_playlist_id: str, authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
+    r = requests.get(SPOTIFY_API_ME, headers={'Authorization': authorization})
+    user = r.json()
+    user_id = user.get('id', None)
+    if user_id is None:
+        raise HTTPException(status_code=400, detail='User does not exist')
+    req = requests.get('https://api.spotify.com/v1/playlists/' + spot_playlist_id, headers={'Authorization': authorization})
+    info = req.json()
+    return {"name": info['name'], 'id': info['id'], 'owner': info['owner']}
 
 @app.get('/playlist')
 async def read_playlists(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
@@ -271,6 +283,48 @@ def get_contributors(tracks_info, authorization):
     contributors = {elem: requests.get(f'https://api.spotify.com/v1/users/{elem}', headers={'Authorization': authorization}).json()['display_name'] for elem in contributors_id}
     return contributors
 
+def getAllTracks(playlist_id, authorization):
+    tracks = []
+    i = 0
+    c = True
+    while c:
+        response = requests.get(f'https://api.spotify.com/v1/playlists/{playlist_id}/tracks', params={
+            'fields': 'next, items(added_at, added_by, id, track(album(artists), name, id, href, duration))',
+            'limit': 50,
+            'offset': i,
+        }, headers={'Content-Type':'application/json', 'Authorization': authorization})
+        tracks.append(response.json())
+        if response.json()['next'] == None:
+            c = False
+        i+= 50
+    result = []
+    for a in tracks:
+        result += a['items']
+    return result
+
+def get_user_profile(usr, authorization):
+    try:
+        req = requests.get(f'https://api.spotify.com/v1/users/{usr}', 
+            headers={'Authorization': authorization})
+    except:
+        return None
+    return req.json()
+
+@app.get('/users/{playlist_id}')
+async def get_user_info(playlist_id: str, authorization: Optional[str] = Header(None)):
+    r = requests.get(SPOTIFY_API_ME, headers={'Authorization': authorization})
+    user = r.json()
+    user_id = user.get('id', None)
+    user_name = user.get('display_name', None)
+    if user_id is None or user_name is None:
+        raise HTTPException(status_code=400, detail='No profile found')
+    tracks_info = getAllTracks(playlist_id, authorization)
+    contributors = get_contributors(tracks_info, authorization)
+    result = []
+    for usr in contributors:
+        result.append(get_user_profile(usr, authorization))
+    return result
+
 @app.get('/playlist/{playlist_id}/graph')
 async def create_playlist_graph(playlist_id:str, authorization: Optional[str] = Header(None)):
     r = requests.get(SPOTIFY_API_ME, headers={'Authorization': authorization})
@@ -279,23 +333,25 @@ async def create_playlist_graph(playlist_id:str, authorization: Optional[str] = 
     user_name = user.get('display_name', None)
     if user_id is None or user_name is None:
         raise HTTPException(status_code=400, detail='No profile found')
-    tracks = requests.get(f'https://api.spotify.com/v1/playlists/{playlist_id}', headers={'Authorization': authorization})
-    tracks_info = tracks.json()['tracks']['items']
+    tracks_info = getAllTracks(playlist_id, authorization)
     contributors = get_contributors(tracks_info, authorization)
-    tracks_dict = {}
-    new_dict = {}
-    for elem in tracks_info:
-        tracks_dict.setdefault(elem['added_at'][:7], {})
-        current_contrib = contributors[elem['added_by']['id']]
-        tracks_dict[elem['added_at'][:7]].setdefault(current_contrib, {})
-        tracks_dict[elem['added_at'][:7]][current_contrib] = {
-            'id': elem['added_by']['id'],
-        }
-        tracks_dict[elem['added_at'][:7]][current_contrib].setdefault('tracks', [])
-        # print(new_dict[current_contrib]['tracks'], current_contrib)
-        tracks_dict[elem['added_at'][:7]][current_contrib]['tracks'].append({
+    dates = list(set([elem['added_at'][:7] for elem in tracks_info]))
+
+    track_list = [{
+        'added_at': elem['added_at'][:7],
+        'added_by': contributors[elem['added_by']['id']],
+        'tracks': [{
             'id': elem['track']['id'],
             'name': elem['track']['name']
-        })
-        # tracks_dict[elem['added_at'][:7]] = new_dict
-    return {'data': tracks_dict}
+        }],
+    } for elem in tracks_info]
+    for index, d in enumerate(track_list):
+        index_delete = []
+        for i in range(index + 1, len(track_list)):
+            if track_list[i]['added_at'][:7] == d['added_at'][:7] and track_list[i]['added_by'] == d['added_by']:
+                index_delete.append(i)
+                d.update({'tracks': d['tracks'] + track_list[i]['tracks']})
+        index_delete.reverse()
+        for t in index_delete:
+            track_list.pop(t)
+    return {'data':  sorted(track_list, key=lambda x: x['added_at']), 'dates': {'max': max(dates), 'min':min(dates)}}
