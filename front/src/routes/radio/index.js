@@ -1,4 +1,5 @@
 import { useAuth } from '../../context/auth';
+import { useToast } from '../../context/toast';
 import useUser from '../../hooks/useUser';
 import useMessage from '../../hooks/useMessage';
 import Alert from '../../components/alert';
@@ -18,7 +19,7 @@ function Radio() {
 	const [ txtFormatDescr , setTxtFormatDescr ] = useState();
 	const { isShowingMessage, toggleMessage } = useMessage();
 	const { user, mutate } = useUser();
-
+	const { toastList, setToastList } = useToast();
 	if (!user)
 		return <LoadError></LoadError>
 	
@@ -36,6 +37,14 @@ function Radio() {
 			loadingElem.lastElementChild.classList.add("success");
 			setTxtFormatTitle("A new playlist has been created.");
 			setTxtFormatDescr(`The radio found ${message.data.tracks_number} new tracks released in the past ${message.data.date} days. And created the playlist ${message.data.playlist_name}`);
+			setToastList(() => {
+				return [...toastList, {
+					id: message.data.date,
+					title: "Info",
+					description: "Successfully created radio for " + message.data.playlist_name + " !" ,
+					backgroundColor: "#7DA641",
+				}]
+			})
 			setTimeout(function(loadingElem) {
 				loadingElem.lastElementChild.classList.remove("success");
 			}, 3000, loadingElem);
@@ -46,6 +55,14 @@ function Radio() {
 			loadingElem.lastElementChild.classList.add("warning");
 			setTxtFormatTitle(`${message.data.error}`);
 			setTxtFormatDescr(`The spotils radio utility could not define new songs from this playlist. Problem: ${message.data.error}`);
+			setToastList(() => {
+				return [...toastList, {
+					id: message.data.date,
+					title: "Alert",
+					description: "Radio could not be created !" ,
+					backgroundColor: "#A65041",
+				}]
+			})
 			setTimeout(function(loadingElem) {
 				loadingElem.lastElementChild.classList.remove("warning");
 			}, 3000, loadingElem);

@@ -64,7 +64,7 @@ form li input {
 }
 
 form li:nth-child(2n) {
-    background-color: rgba(10,10, 10, 0.3);
+    background-color: rgba(80,2, 10, 0.2);
 }
 
 

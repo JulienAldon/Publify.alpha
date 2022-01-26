@@ -26,17 +26,17 @@ function Home() {
 					<HomeButton 
 						link="/radio"
 						icon='fas fa-broadcast-tower'
-						title='Radio'
+						title='Scanify'
 					/>
 					<HomeButton 
 						link="/dashboard"
 						icon='fas fa-search'
-						title='Dashboard'
+						title='Publify'
 					/>
 					<HomeButton 
 						link="/analytics"
 						icon='fas fa-chart-line'
-						title='Analytics'
+						title='Statify'
 					/>
 				</div>
 			</section>

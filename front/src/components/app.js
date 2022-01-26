@@ -8,6 +8,7 @@ import About from '../routes/about';
 import Radio from '../routes/radio';
 import Analytics from '../routes/analytics';
 import Toast from './toast';
+import PlaylistAnalytics from '../routes/playlistAnalytics';
 
 function App() {		
 	return (
@@ -21,6 +22,7 @@ function App() {
 						<About path="/about"/>
 						<Radio path="/radio"/>
 						<Analytics path="/analytics"/>
+						<PlaylistAnalytics path="/analytics/:id"/>
 					</Router>
 					<Toast 
 						position="bottom-right"

@@ -1,0 +1,31 @@
+.imageContainer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    display: flex;
+    /* padding-left: 1rem; */
+    /* justify-content: space-between; */
+    flex-wrap: wrap;
+}
+
+
+.imageBox {
+    display: flex;
+    margin-left: 2rem;
+    
+    align-items: center;
+}
+
+.imageLabel {
+    padding-left: .5em;
+    color: #fff;
+}
+
+.selected {
+	background-color: rgba(20, 20, 20, 0.5);
+}
+
+.image {
+    width: 2em;
+    height: 2em;
+    border-radius: 50%
+}

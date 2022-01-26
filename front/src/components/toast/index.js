@@ -21,7 +21,7 @@ const Toast = (props) => {
                 !toastList ? null :
                 toastList.map((t, i) => 
                 <div key={i} title={t.description} className={`notification toast ${position}`} style={{ backgroundColor: t.backgroundColor }}>
-                    <button onClick={() => deleteToast(t.id)}>X</button>
+                    <button onClick={() => deleteToast(t.id)}><i class="material-icons">clear</i></button>
                     <div>
                         <h1 className="notificationTitle">{t.title}</h1>
                         <p className="notificationDescription">{t.description}</p>

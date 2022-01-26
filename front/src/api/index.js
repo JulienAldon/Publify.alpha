@@ -64,7 +64,6 @@ function createRadio(token, selected, setMessage) {
 		else {
 			setMessage(t);
 		}
-		console.log(t);
 	})
 }
 
@@ -97,11 +96,52 @@ function getPlaylists(url, token) {
 	})
 }
 
+function getPlaylistInfos(url, id, token) {
+	return fetch(url + id, {
+		method: 'GET',
+		headers: {"Authorization": "Bearer " + token}
+	}).then((r) => {
+		return r.json()
+	}).catch(err => {
+		const error = new Error("Not authorized!");
+		error.status = 403;
+		throw error;
+	})
+}
+
+function getPlaylistAnalytic(url, token) {
+	return fetch(url, {
+		method: 'GET',
+		headers: {'Authorization': "Bearer " + token}
+	}).then((r) => {
+		return r.json();
+	}).catch(err => {
+		const error = new Error("Not authorized!");
+		error.status = 403;
+		throw error;
+	})
+}
+
+function getUsersInfo(url, token) {
+	return fetch(url, {
+		method: 'GET',
+		headers: {'Authorization': "Bearer " + token}
+	}).then((r) => {
+		return r.json()
+	}).catch(err => {
+		const error = new Error("Not authorized");
+		error.status = 403;
+		throw error;
+	})
+}
 
 export {
 	createLink,
 	deleteLink,
 	syncPlaylist,
 	createRadio,
-	getPlaylists
+	getPlaylists,
+	getPlaylistInfos,
+	getPlaylistAnalytic,
+	getUsersInfo
 }

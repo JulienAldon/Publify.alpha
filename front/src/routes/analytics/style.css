@@ -65,7 +65,7 @@ main footer {
 
 form {
     padding: 0;
-    display: flex;
+    /* display: flex; */
     flex-basis: 70%;
     flex-grow: 1;
     flex-shrink: 0;
@@ -73,11 +73,15 @@ form {
     flex-flow: column;
     overflow: scroll;
     flex: 1 1 auto;
-    max-height: 30rem;
+    /* max-height: 30rem; */
 }
 
 form li input {
     display: none;
+}
+
+form li:nth-child(2n) {
+    background-color: rgba(20, 20, 20, 0.15);
 }
 
 form li input:checked + label {

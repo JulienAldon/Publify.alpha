@@ -194,6 +194,7 @@ main table th:last-child, main table td.item-actions.actions {
 }
 
 
+
 main .item-actions-radio.actions-radio * {
 	margin: 0;
 }
@@ -268,7 +269,6 @@ main .item-actions-radio.actions-radio i.material-icons {
 	animation: rotation 2s infinite;
 }
 
-
 .removed {
     opacity: 0;
 }
@@ -314,6 +314,15 @@ dialog form li input:checked + label {
     left: 1em;
     transition: transform .6s ease-in;
     animation: toast-in-left .7s;
+}
+
+.graphLabel {
+	display: none;
+	font-weight: bolder;
+}
+
+.graphPoint:hover + .graphLabel {
+	display: unset;
 }
 
 .notificationContainer {
