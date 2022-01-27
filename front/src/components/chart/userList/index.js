@@ -16,10 +16,10 @@ function UserList({ users, selected, setSelected }) {
       {
         users.map((usr) => {
           return (
-            <button class={`${style.imageBox} ${selected.find(el=>el===usr) ? style.selected : ""}`} onClick={() => {
-              let testUsr = selected.find(elem => elem === usr);
+            <button class={`${style.imageBox} ${selected.find(el=>el.display_name===usr.display_name) ? style.selected : ""}`} onClick={() => {
+              let testUsr = selected.find(elem => elem.display_name === usr.display_name);
               if (testUsr) {
-                setSelected([...selected.filter(el => el !== usr)])
+                setSelected((selected) => [...selected.filter(el => el.display_name !== usr.display_name)])
               } else if (!testUsr) {
                 setSelected([...selected, usr])
                 if (selected.lenght === users.lenght) {

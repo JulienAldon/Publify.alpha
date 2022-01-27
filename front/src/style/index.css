@@ -278,6 +278,10 @@ h1 {
 	text-align: center;
 }
 
+h2 {
+	color: #fff;
+}
+
 dialog form li input:checked + label {
     background: repeating-linear-gradient(
     135deg,
