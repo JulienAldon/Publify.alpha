@@ -273,6 +273,11 @@ main .item-actions-radio.actions-radio i.material-icons {
     opacity: 0;
 }
 
+h1 {
+	color: #fff;
+	text-align: center;
+}
+
 dialog form li input:checked + label {
     background: repeating-linear-gradient(
     135deg,

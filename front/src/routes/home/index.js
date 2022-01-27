@@ -7,14 +7,10 @@ import useUser from '../../hooks/useUser';
 import HomeButton from '../../components/homeButton';
 import settings from '../../settings';
 import Loader from '../../components/loader';
+import LoadError from '../../components/loadError';
 
 function Home() {
-	const { loading, user, mutate } = useUser();
-
-	function login() {
-		window.location.replace(`${settings.SERVICE_URI}/api/auth/login`);
-	}
-	
+	const { loading, user, mutate } = useUser();	
 	useEffect(() => {
 	}, [user]);
 
@@ -45,13 +41,7 @@ function Home() {
 	if (loading) {
 		return <Loader></Loader>
 	}
-	return (
-		<main>
-			<h1 className={style.title}>Welcome to Spotils</h1>
-			<h2 style="text-align:center;">Login with spotify to use the tools.</h2>
-			<button className={style.loginButton} onClick={login}>Login</button>
-		</main>
-	);
+	return <LoadError></LoadError>;
 }
 
 export default Home;

@@ -36,7 +36,7 @@ function PlaylistAnalytics() {
                 route('/analytics');
             }}><i class="material-icons">arrow_back</i></button>
             <h1 className={style.title}>{data.name}</h1>
-            <Chart analytic={analytic} users_p={users}/>
+            <Chart analytic={analytic} users={users}/>
         </main>
     );
 } 

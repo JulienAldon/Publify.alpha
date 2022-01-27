@@ -16,12 +16,6 @@ function Analytics() {
 	const [ message, setMessage ] = useState({"data": {}});
     const [ selectedPlaylist, setSelectedPlaylist ] = useState([{"name": "", "id": ""}])
 	const { toastList, setToastList } = useToast()
-	// useEffect(() => {
-	// 	if (!user) {
-	// 		route('/')
-	// 	}
-	// }, [user]);
-	
 	if (!user) 
 		return <LoadError></LoadError>	
 

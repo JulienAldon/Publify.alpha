@@ -5,6 +5,7 @@ import SvgCircles from "./svgCircles";
 import UserList from "./userList";
 import YRuler from "./yRuler";
 import XRuler from "./xRuler";
+import { set } from "js-cookie";
 
 function createRangeDates(start, end) {
   var current = new Date(start);
@@ -50,47 +51,57 @@ function createOrdScale(end, step) {
   return arr;
 }
 
-function randomHsl() {
-  return 'hsla(' + (Math.random() * 360) + ', 100%, 50%, 1)';
+function useOrd(maxHeight) {
+  const [ord, setOrd] = useState(createOrdScale(maxHeight, 5))
+
+  useEffect(() => {
+    setOrd(createOrdScale(maxHeight, 5))
+  }, [maxHeight])
+  return ord
 }
 
-function Chart({ analytic, users_p }) {
-  const colors = ['#FF4F00', '#64C800', '#FFD700', '#E100FF', '#860DFF', '#40FFB5', '#0000FF']
-  // if (users.length > colors.length) {
-  //   // TODO: add colors to colors until selectedUsers.length < colors.length
-  // }
-
-  const [users, setUsers] = useState(users_p);
-  // const colors = useMemo(() => [...users.map(el => randomHsl())])
-  const [selectedUsers, setSelectedUsers] = useState(createLegend(users, colors));
-  const [maxHeight, setMaxHeight] = useState(50)
+function useDimensions(svgRef) {
   const [dimensions, setDimensions] = useState({ 'width': 800, 'height': 600 });
-  const [ord, setOrd] = useState(createOrdScale(maxHeight, 5))
   const [paddingLeft, setPaddingLeft] = useState(80);
   const [paddingTop, setPaddingTop] = useState(dimensions.height - 100);
   const [amplitude, setAmplitude] = useState(dimensions.height / 1.5);
-  const dates = useMemo(() => createRangeDates(new Date(analytic.dates.min), new Date(analytic.dates.max)), [analytic]);
-  const svgRef = useRef();
 
   useEffect(() => {
     let rect = svgRef.current?.getBoundingClientRect?.();
     setDimensions({ 'width': rect?.width, 'height': rect?.height });
-    fillAnalyticObj(analytic?.data, dates);
-    analytic?.data?.sort((a, b) => new Date(a?.added_at) - new Date(b?.added_at));
-    setOrd(createOrdScale(maxHeight, 5));
     setPaddingTop(dimensions.height - 100);
     setAmplitude(dimensions.height / 1.5);
     setPaddingLeft(80)
-  }, [users, maxHeight, dimensions])
-  useEffect(() => {
-    setMaxHeight(Math.max(...analytic.data.map(el => selectedUsers.find(t => t.display_name === el.added_by) ? el.tracks.length : 1)));
-  }, [selectedUsers])
-  useEffect(() => {
     window.addEventListener('resize', () => {
       let rect = svgRef.current?.getBoundingClientRect?.();
       setDimensions({ 'width': rect?.width, 'height': rect?.height });
     })
-  }, [svgRef])
+  }, [dimensions, svgRef]);
+
+  return [dimensions, paddingLeft, paddingTop, amplitude]
+}
+
+function randomHsl() {
+  return 'hsla(' + (Math.random() * 360) + ', 100%, 50%, 1)';
+}
+
+function Chart({ analytic, users }) {
+  const svgRef = useRef();
+  const colors = useMemo(() => [...users.map(el => randomHsl())], [])
+  const [selectedUsers, setSelectedUsers] = useState(createLegend(users, colors));
+  const [maxHeight, setMaxHeight] = useState(50)
+  const [dimensions, paddingLeft, paddingTop, amplitude] = useDimensions(svgRef);
+  const dates = useMemo(() => createRangeDates(new Date(analytic.dates.min), new Date(analytic.dates.max)), [analytic]);
+  const ord = useOrd(maxHeight)
+
+  useEffect(() => {
+    analytic?.data?.sort((a, b) => new Date(a?.added_at) - new Date(b?.added_at));
+  }, [analytic])
+  useEffect(() => {
+    setMaxHeight(Math.max(...analytic.data.map(el => selectedUsers.find(t => t.display_name === el.added_by) ? el.tracks.length : 1)));
+  }, [selectedUsers])
+
+  
 
   return (
     <>
@@ -114,6 +125,7 @@ function Chart({ analytic, users_p }) {
         {
           selectedUsers.map((user) => {
             const result = analytic.data.filter(obj => obj.added_by === user.display_name || obj.added_by === '*')
+            fillAnalyticObj(result, dates)
             return (
               <>
                 <SvgPath

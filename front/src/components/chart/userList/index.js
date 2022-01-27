@@ -1,5 +1,5 @@
 import style from './style.css';
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 
 function UserList({ users, selected, setSelected }) {
   const [ isAll, toggleIsAll] = useState(true);
