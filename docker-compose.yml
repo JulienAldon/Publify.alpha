@@ -4,31 +4,18 @@ services:
   postgres:
     image: postgres
     environment:
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: publify
     expose:
       - 5432
     volumes:
       - /var/lib/postgresql
-      # - /srv/www/jammee.io/database-scripts:/docker-entrypoint-initdb.d
   auth:
     build: api
     environment:
       FASTAPI_ENV: prod
-    expose:
-      - 8000
+    ports:
+      - 8082
     depends_on:
       - postgres
-  nginx:
-    container_name: nginx
-    build:
-      context: .
-      dockerfile: nginx/Dockerfile
-    environment:
-      REACT_APP_ENV: prod
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-    depends_on:
-      - auth

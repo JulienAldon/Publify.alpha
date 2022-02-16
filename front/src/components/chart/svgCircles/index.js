@@ -1,5 +1,5 @@
 function SvgCircles(props) {
-  const { color, result, paddingLeft, paddingTop, width, amplitude, selectedUser, maxHeight } = props
+  const { color, result, paddingLeft, paddingTop, width, amplitude, maxHeight } = props
   return (
     <>
       {

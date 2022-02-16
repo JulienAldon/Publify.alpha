@@ -63,22 +63,46 @@ function useOrd(maxHeight) {
 function useDimensions(svgRef) {
   const [dimensions, setDimensions] = useState({ 'width': 800, 'height': 600 });
   const [paddingLeft, setPaddingLeft] = useState(80);
-  const [paddingTop, setPaddingTop] = useState(dimensions.height - 100);
+  const [paddingTop, setPaddingTop] = useState(dimensions.height - 170);
   const [amplitude, setAmplitude] = useState(dimensions.height / 1.5);
 
   useEffect(() => {
     let rect = svgRef.current?.getBoundingClientRect?.();
-    setDimensions({ 'width': rect?.width, 'height': rect?.height });
-    setPaddingTop(dimensions.height - 100);
-    setAmplitude(dimensions.height / 1.5);
-    setPaddingLeft(80)
-    window.addEventListener('resize', () => {
+    const resizeHandler = () => {
       let rect = svgRef.current?.getBoundingClientRect?.();
       setDimensions({ 'width': rect?.width, 'height': rect?.height });
-    })
-  }, [dimensions, svgRef]);
+    }
+    setDimensions({ 'width': rect?.width, 'height': rect?.height });
+    setPaddingTop(dimensions.height - 170);
+    setAmplitude(dimensions.height / 1.5);
+    setPaddingLeft(80)
+    window.addEventListener('resize', resizeHandler);
+    return () => {
+      window.removeEventListener('resize', resizeHandler);
+    }
+  }, [svgRef]);
 
   return [dimensions, paddingLeft, paddingTop, amplitude]
+}
+
+function useResult(selectedUsers, analytic, dates) {
+  const [results, setResults] = useState([...selectedUsers.map((user) => {
+    return [...analytic.data.filter((elem) => elem.added_by === user.display_name)]
+  })]);
+  results.forEach((el) => {
+    fillAnalyticObj(el, dates);
+    el?.sort((a, b) => new Date(a?.added_at) - new Date(b?.added_at))
+  })
+  useEffect(() => {
+    setResults([...selectedUsers.map((user) => {
+      return [...analytic.data.filter((elem) => elem.added_by === user.display_name)]
+    })]);
+    results.forEach((el) => {
+      fillAnalyticObj(el, dates);
+      el?.sort((a, b) => new Date(a?.added_at) - new Date(b?.added_at))
+    })
+  }, [selectedUsers, analytic]);
+  return [results, setResults];
 }
 
 function randomHsl() {
@@ -92,16 +116,16 @@ function Chart({ analytic, users }) {
   const [maxHeight, setMaxHeight] = useState(50)
   const [dimensions, paddingLeft, paddingTop, amplitude] = useDimensions(svgRef);
   const dates = useMemo(() => createRangeDates(new Date(analytic.dates.min), new Date(analytic.dates.max)), [analytic]);
+  const [results, setResults] = useResult(selectedUsers, analytic, dates);
   const ord = useOrd(maxHeight)
 
   useEffect(() => {
     analytic?.data?.sort((a, b) => new Date(a?.added_at) - new Date(b?.added_at));
   }, [analytic])
+
   useEffect(() => {
     setMaxHeight(Math.max(...analytic.data.map(el => selectedUsers.find(t => t.display_name === el.added_by) ? el.tracks.length : 1)));
   }, [selectedUsers])
-
-  
 
   return (
     <>
@@ -123,33 +147,31 @@ function Chart({ analytic, users }) {
           dimensions={dimensions}
         />
         {
-          selectedUsers.map((user) => {
-            const result = analytic.data.filter(obj => obj.added_by === user.display_name || obj.added_by === '*')
-            fillAnalyticObj(result, dates)
+          results.map((user) => {
+            const usr = user?.filter(el => el?.added_by !== '*')[0];
+            const color = selectedUsers?.find(el => el?.display_name === usr?.added_by)
             return (
               <>
                 <SvgPath
-                  color={user.color}
+                  color={color?.color}
                   paddingLeft={paddingLeft}
                   paddingTop={paddingTop}
                   width={dimensions.width - 100}
-                  result={result}
+                  result={user}
                   amplitude={amplitude}
                   maxHeight={maxHeight}
                 />
                 <SvgCircles
-                  color={user.color}
-                  result={result}
+                  color={color?.color}
+                  result={user}
                   paddingLeft={paddingLeft}
                   paddingTop={paddingTop}
                   width={dimensions.width - 100}
                   amplitude={amplitude}
-                  selectedUser={user}
                   maxHeight={maxHeight}
                 />
               </>
             );
-
           })
         }
       </svg>

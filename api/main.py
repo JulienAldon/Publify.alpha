@@ -21,6 +21,7 @@ import requests
 import json
 import os
 import base64
+from itertools import islice
 
 app = FastAPI()
 
@@ -103,10 +104,8 @@ async def read_playlists(authorization: Optional[str] = Header(None), db: Sessio
     if user_name is None or user_id is None:
         raise HTTPException(status_code=403, detail='Not connected')
     authorization_code = authorization.split(' ')[1]
-
     usr = spdrv.User(token=authorization_code, id=user_id, name=user_name)
     usr.getPlaylists()
-
     db_user = get_user_by_spotify_id(db, user_id)
     user_syncs = get_sync_by_owner(db, db_user.id)
     result = {
@@ -325,8 +324,27 @@ async def get_user_info(playlist_id: str, authorization: Optional[str] = Header(
         result.append(get_user_profile(usr, authorization))
     return result
 
+def getAudioFeatures(tracks_ids, authorization):
+    results = []
+    nb = len(tracks_ids)
+    start = 0
+    while start + 100 < nb:
+        ids = ','.join(tracks_ids[start:start+100])
+        request = requests.get(f'https://api.spotify.com/v1/audio-features', params={
+            'ids': ids
+            }, headers={'Authorization': authorization})
+        results.append(request.json())
+        start += 100
+    last = nb % 100
+    ids = ','.join(tracks_ids[start:start+last])
+    request = requests.get(f'https://api.spotify.com/v1/audio-features', params={
+        'ids': ids
+        }, headers={'Authorization': authorization})
+    results.append(request.json())
+    return [val for sublist in results for val in sublist['audio_features']]
+
 @app.get('/playlist/{playlist_id}/graph')
-async def create_playlist_graph(playlist_id:str, authorization: Optional[str] = Header(None)):
+async def create_playlist_graph(playlist_id:str, graph_type:str = None, authorization: Optional[str] = Header(None)):
     r = requests.get(SPOTIFY_API_ME, headers={'Authorization': authorization})
     user = r.json()
     user_id = user.get('id', None)
@@ -336,7 +354,6 @@ async def create_playlist_graph(playlist_id:str, authorization: Optional[str] = 
     tracks_info = getAllTracks(playlist_id, authorization)
     contributors = get_contributors(tracks_info, authorization)
     dates = list(set([elem['added_at'][:7] for elem in tracks_info]))
-
     track_list = [{
         'added_at': elem['added_at'][:7],
         'added_by': contributors[elem['added_by']['id']],
@@ -354,4 +371,18 @@ async def create_playlist_graph(playlist_id:str, authorization: Optional[str] = 
         index_delete.reverse()
         for t in index_delete:
             track_list.pop(t)
-    return {'data':  sorted(track_list, key=lambda x: x['added_at']), 'dates': {'max': max(dates), 'min':min(dates)}}
+
+    if graph_type != None:
+        tracks_ids = list(set([elem['track']['id'] for elem in tracks_info]))
+        audio_features = getAudioFeatures(tracks_ids, authorization)
+        for track_sublist in track_list:
+            to_remove = []
+            for a in track_sublist['tracks']:
+                match = next(filter(lambda x: x['id'] == a['id'], audio_features))
+                if match[graph_type] > 0.5:
+                    a.update(match)
+                else:
+                    to_remove.append(a)
+            for e in to_remove:
+                track_sublist['tracks'].remove(e)
+    return {'data': sorted(track_list, key=lambda x: x['added_at']), 'dates': {'max': max(dates), 'min':min(dates)}}
