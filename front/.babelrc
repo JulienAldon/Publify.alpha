@@ -5,7 +5,9 @@
   "plugins": [
     ["transform-inline-environment-variables", {
       "include": [
-        "REACT_APP_ENV"
+        "REACT_APP_ENV",
+        "SERVICE_URI",
+        "ROOT_FQDN"
       ]
     }]
   ]
