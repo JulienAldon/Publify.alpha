@@ -7,6 +7,7 @@ nodepkg.mkNodePackage {
     buildPhase = ''
         export COOKIE_DOMAIN=${cookieDomain}
         export SERVICE_URL=${serviceUrl}
+        export REACT_APP_ENV=env
         npm run build
     '';
     installPhase = ''
