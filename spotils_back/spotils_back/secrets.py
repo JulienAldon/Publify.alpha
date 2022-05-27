@@ -1,13 +1,6 @@
 import os
 
-if os.getenv('APP_ENV') == 'prod':
-    SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://user:password@postgres/publify"
-    origins = [
-        'https://publify.aldon.info',
-    ]
-    CALLBACK_URL  = 'https://auth.publify.aldon.info/api/auth/authorized'
-    REDIRECT_URL = 'https://publify.aldon.info'
-elif os.getenv('APP_ENV') == 'env':
+if os.getenv('APP_ENV') == 'env':
     CALLBACK_URL = os.getenv('CALLBACK_URL')
     REDIRECT_URL = os.getenv('REDIRECT_URL')
     origins = [os.getenv('CORS_ORIGIN')]
