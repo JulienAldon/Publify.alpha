@@ -1,4 +1,4 @@
-{ nodepkg, cookieDomain ? "localhost", serviceUrl ? "http://localhost:8000" }:
+{ nodepkg, cookieDomain ? "localhost", serviceUrl ? "http://localhost:8000", ... }:
 nodepkg.mkNodePackage {
     pname = "spotils-front";
     version = "1.0.0-rc.1";

@@ -12,7 +12,7 @@
     nodepkg = nodepkgs.lib.x86_64-linux;
   in {
     packages.x86_64-linux = utils.lib.flattenTree {
-      spotils-back = nixpkgs.lib.callPackageWith pkgs ./spotils_back { system = "x86_64-linux"; };
+      spotils-back = nixpkgs.lib.callPackageWith pkgs (import ./spotils_back self) { system = "x86_64-linux"; };
       spotils-front = nixpkgs.lib.callPackageWith pkgs ./spotils_front { inherit nodepkg; };
     };
     nixosModule = import ./nixos/spotils.nix self;

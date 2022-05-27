@@ -1,4 +1,4 @@
-{ pkgs }:
+{ pkgs, ... }:
 
 pkgs.python39Packages.buildPythonApplication {
   pname = "spotils-back";
