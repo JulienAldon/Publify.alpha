@@ -58,12 +58,12 @@ in {
 
     spotify = {
       callbackUrl = lib.mkOption {
-        type = lib.types.singleLineStr;
+        type = lib.types.str;
         description = "URL Spotify redirects to after authentification.";
       };
 
       redirectUrl = lib.mkOption {
-        type = lib.types.singleLineStr;
+        type = lib.types.str;
         description = "URL we redirect to after receiving a token.";
       };
     };
