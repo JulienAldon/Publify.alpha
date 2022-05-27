@@ -2,7 +2,7 @@
 let 
   cfg = config.services.spotils-back;
   back = flake.packages.${system}.spotils-back;
-  pythonPath = [ "${back}/lib/python3.9" ] ++ builtins.map (d: "${d}/lib/python3.9") back.propagatedBuildInputs;
+  pythonPath = [ "${back}/lib/python3.9/site-packages" ] ++ builtins.map (d: "${d}/lib/python3.9/site-packages") back.propagatedBuildInputs;
 in { 
   options.services.spotils-back = {
     enable = lib.mkEnableOption "Spotify playlist managment tool";
