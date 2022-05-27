@@ -22,14 +22,13 @@ function PlaylistAnalytics() {
     const { data, error } = useSWR([`${settings.SERVICE_URI}/playlist-info/`, window.location.pathname.slice(11), authContext.token], getPlaylistInfos);
     const { data: analytic, error: analyticError } = useSWR([`${settings.SERVICE_URI}/playlist/${window.location.pathname.slice(11)}/graph${graphType != 'None' ? '?graph_type='+graphType : ""}`, authContext.token], getPlaylistAnalytic);
     const { data: users, error: usersError } = useSWR([`${settings.SERVICE_URI}/users/${window.location.pathname.slice(11)}`, authContext.token], getUsersInfo);
-    console.log(error)
     if (!data || !analytic || !users)
         return <Loader></Loader>
     if (error || analyticError || usersError)
         return <LoadError></LoadError>
 
     return (
-        <main>
+        <main style="margin-bottom: 1rem">
             <button onClick={() => {
                 route('/analytics');
             }}><i class="material-icons">arrow_back</i></button>

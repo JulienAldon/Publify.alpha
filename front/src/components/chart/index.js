@@ -61,9 +61,9 @@ function useOrd(maxHeight) {
 }
 
 function useDimensions(svgRef) {
-  const [dimensions, setDimensions] = useState({ 'width': 800, 'height': 600 });
+  const [dimensions, setDimensions] = useState({ 'width': 900, 'height': 630 });
   const [paddingLeft, setPaddingLeft] = useState(80);
-  const [paddingTop, setPaddingTop] = useState(dimensions.height - 170);
+  const [paddingTop, setPaddingTop] = useState(dimensions.height - 300);
   const [amplitude, setAmplitude] = useState(dimensions.height / 1.5);
 
   useEffect(() => {
@@ -73,7 +73,7 @@ function useDimensions(svgRef) {
       setDimensions({ 'width': rect?.width, 'height': rect?.height });
     }
     setDimensions({ 'width': rect?.width, 'height': rect?.height });
-    setPaddingTop(dimensions.height - 170);
+    setPaddingTop(dimensions.height - 300);
     setAmplitude(dimensions.height / 1.5);
     setPaddingLeft(80)
     window.addEventListener('resize', resizeHandler);
