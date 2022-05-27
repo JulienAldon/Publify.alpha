@@ -2,7 +2,6 @@
 let 
   cfg = config.services.spotils-back;
   back = flake.packages.${system}.spotils-back;
-  pythonPath = [ "${back}/lib/python3.9/site-packages" ] ++ builtins.map (d: "${d}/lib/python3.9/site-packages") back.propagatedBuildInputs;
 in { 
   options.services.spotils-back = {
     enable = lib.mkEnableOption "Spotify playlist managment tool";
@@ -93,7 +92,7 @@ in {
         CORS_ORIGIN = cfg.corsOrigin;
         CALLBACK_URL = cfg.spotify.callbackUrl;
         REDIRECT_URL = cfg.spotify.redirectUrl;
-        PYTHONPATH = builtins.concatStringsSep ":" pythonPath;
+        PYTHONPATH = pkgs.python39Packages.makePythonPath [ back ];
       };
       serviceConfig = {
         EnvironmentFile = cfg.envFile;
