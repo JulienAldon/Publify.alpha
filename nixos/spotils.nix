@@ -1,4 +1,4 @@
-flake: { system, config, lib, pkgs, ... }:
+{ flake, system }: { config, lib, pkgs, ... }:
 let 
   cfg = config.services.spotils-back;
 in { 
