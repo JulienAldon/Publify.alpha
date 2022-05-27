@@ -7,7 +7,7 @@
       "include": [
         "REACT_APP_ENV",
         "SERVICE_URI",
-        "ROOT_FQDN"
+        "COOKIE_DOMAIN"
       ]
     }]
   ]

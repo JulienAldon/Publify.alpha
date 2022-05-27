@@ -10,7 +10,7 @@ import { route } from 'preact-router';
 import settings from '../../settings';
 
 function logout() {
-	Cookies.remove('userToken', { domain: `.${settings.ROOT_FQDN}`});
+	Cookies.remove('userToken', { domain: `.${settings.COOKIE_DOMAIN}`});
 	route('/');
 }
 function login() {
@@ -24,8 +24,8 @@ function Header() {
 	useEffect(() => {
 		const params = new URLSearchParams(window.location.search)
 		if (params.get("token")) {
-			Cookies.set('userToken', params.get("token"), { domain: `.${settings.ROOT_FQDN}`, secure: true});
-			authContext.token = Cookies.get('userToken', { domain: `.${settings.ROOT_FQDN}`});
+			Cookies.set('userToken', params.get("token"), { domain: `.${settings.COOKIE_DOMAIN}`, secure: true});
+			authContext.token = Cookies.get('userToken', { domain: `.${settings.COOKIE_DOMAIN}`});
 		}
 	});
 
