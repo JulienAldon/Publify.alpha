@@ -1,6 +1,8 @@
 { flake, system }: { config, lib, pkgs, ... }:
 let 
   cfg = config.services.spotils-back;
+  back = flake.packages.${system}.spotils-back;
+  pythonPath = [ "${back}/lib/python3.9" ] ++ builtins.map (d: "${d}/lib/python3.9") back.propagatedBuildInputs;
 in { 
   options.services.spotils-back = {
     enable = lib.mkEnableOption "Spotify playlist managment tool";
@@ -91,12 +93,13 @@ in {
         CORS_ORIGIN = cfg.corsOrigin;
         CALLBACK_URL = cfg.spotify.callbackUrl;
         REDIRECT_URL = cfg.spotify.redirectUrl;
+        PYTHONPATH = builtins.concatStringsSep ":" pythonPath;
       };
       serviceConfig = {
         EnvironmentFile = cfg.envFile;
         User = cfg.user;
         Group = cfg.group;
-        ExecStart = "${cfg.uvicorn.package}/bin/uvicorn --host ${cfg.host} --port ${builtins.toString cfg.port} --app-dir ${flake.packages.${system}.spotils-back}/lib/python3.9/site-packages ${cfg.uvicorn.extraArguments} spotils_back:app";
+        ExecStart = "${cfg.uvicorn.package}/bin/uvicorn --host ${cfg.host} --port ${builtins.toString cfg.port} --app-dir ${back}/lib/python3.9/site-packages ${cfg.uvicorn.extraArguments} spotils_back:app";
       };
     };
   };
