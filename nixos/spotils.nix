@@ -2,6 +2,9 @@
 let 
   cfg = config.services.spotils-back;
   back = flake.packages.${system}.spotils-back;
+  uvicorn = cfg.uvicorn.package.overrideAttrs (oldAttrs: {
+    propagatedBuildInputs = oldAttrs.propagatedBuildInputs ++ [back];
+  });
 in { 
   options.services.spotils-back = {
     enable = lib.mkEnableOption "Spotify playlist managment tool";
@@ -98,7 +101,7 @@ in {
         EnvironmentFile = cfg.envFile;
         User = cfg.user;
         Group = cfg.group;
-        ExecStart = "${cfg.uvicorn.package}/bin/uvicorn --host ${cfg.host} --port ${builtins.toString cfg.port} --app-dir ${back}/lib/python3.9/site-packages ${cfg.uvicorn.extraArguments} spotils_back:app";
+        ExecStart = "${uvicorn}/bin/uvicorn --host ${cfg.host} --port ${builtins.toString cfg.port} --app-dir ${back}/lib/python3.9/site-packages ${cfg.uvicorn.extraArguments} spotils_back:app";
       };
     };
   };
