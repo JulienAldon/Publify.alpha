@@ -230,11 +230,11 @@ async def sync_playlist(sync_id: int, authorization: Optional[str] = Header(None
         collaborative.sync(public)     
     return {'id': sync_id}
 
-@app.get('/api/auth/login')
+@app.get('/auth/login')
 async def spotify_api_login():
     return RedirectResponse(f'https://accounts.spotify.com/authorize?response_type=code&client_id={CLIENT_ID}&scope={SCOPES}&redirect_uri={CALLBACK_URL}')
 
-@app.get('/api/auth/authorized')
+@app.get('/auth/authorized')
 async def spotify_api_autorized(code: Optional[str] = None, db: Session = Depends(get_db)):
     payload = {
         'grant_type': 'authorization_code',
@@ -264,7 +264,7 @@ async def spotify_api_autorized(code: Optional[str] = None, db: Session = Depend
     return RedirectResponse(f'{REDIRECT_URL}?token={token}')
 
 
-@app.get('/api/auth/user')
+@app.get('/auth/user')
 async def read_user(authorization: Optional[str] = Header(None)):
     r = requests.get(SPOTIFY_API_ME, headers={'Authorization': authorization})
     user = r.json()
