@@ -23,7 +23,7 @@ export default function useUser() {
     const authContext = useAuth();
     authContext.token = Cookies.get('userToken', { domain: `.${settings.COOKIE_DOMAIN}`});
     const { data, error, mutate } = useSWR(
-        [`${settings.SERVICE_URI}/api/auth/user`, authContext.token],
+        [`${settings.SERVICE_URL}/api/auth/user`, authContext.token],
         userFetcher
     );
     

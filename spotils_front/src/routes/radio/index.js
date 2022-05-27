@@ -71,7 +71,7 @@ function Radio() {
 
 	const authContext = useAuth();
 
-	const { data, error } = useSWR([`${settings.SERVICE_URI}/playlist`, authContext.token], getPlaylists)
+	const { data, error } = useSWR([`${settings.SERVICE_URL}/playlist`, authContext.token], getPlaylists)
 
 	if (error) 
 		return <LoadError></LoadError>

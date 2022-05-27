@@ -2,7 +2,7 @@ import style from './style.css';
 import settings from '../../settings';
 
 function login() {
-    window.location.replace(`${settings.SERVICE_URI}/api/auth/login`);
+    window.location.replace(`${settings.SERVICE_URL}/api/auth/login`);
 }
 
 function LoadError({}) {

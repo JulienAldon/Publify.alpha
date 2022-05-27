@@ -2,7 +2,7 @@ import { mutate } from "swr";
 import settings from '../settings';
 
 function createLink(token, body, setToastList, toastList, id) {
-	return fetch(`${settings.SERVICE_URI}/playlist`, {
+	return fetch(`${settings.SERVICE_URL}/playlist`, {
 		method: 'POST',
 		headers: {
 			"Content-Type": "application/json",
@@ -10,7 +10,7 @@ function createLink(token, body, setToastList, toastList, id) {
 		},
 		body: JSON.stringify(body)
 	}).then((r) => {
-		mutate([`${settings.SERVICE_URI}/playlist`, token]).then(() => {
+		mutate([`${settings.SERVICE_URL}/playlist`, token]).then(() => {
 			setToastList((toastList) => {return [...toastList, {
 				id: id,
 				title: "Info",
@@ -30,7 +30,7 @@ function createLink(token, body, setToastList, toastList, id) {
 }
 
 function syncPlaylist(id, token, mode, elem) {
-	return fetch(`${settings.SERVICE_URI}/playlist/` + id + '/sync?mode=' + mode, {
+	return fetch(`${settings.SERVICE_URL}/playlist/` + id + '/sync?mode=' + mode, {
 		method: 'PUT',
 		headers: {
 			"Content-Type": "application/json",
@@ -48,7 +48,7 @@ function createRadio(token, selected, setMessage) {
 		"playlist_id": selected.id,
 		"playlist_name": selected.name
 	}
-	return fetch(`${settings.SERVICE_URI}/radio`, {
+	return fetch(`${settings.SERVICE_URL}/radio`, {
 		method: 'POST',
 		headers: {
 			"Content-Type": "application/json",

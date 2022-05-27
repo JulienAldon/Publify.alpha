@@ -100,7 +100,7 @@ function Modal({isShowing, hide, data}) {
                     }
                     if (elem)
                         elem.classList.add("rotate");
-                    mutate([`${settings.SERVICE_URI}`, authContext.token], addSync(authContext.token, publicP, collaborative, setToastList, toastList, colElem))
+                    mutate([`${settings.SERVICE_URL}`, authContext.token], addSync(authContext.token, publicP, collaborative, setToastList, toastList, colElem))
                 }}><i id="add-modale-btn" class="material-icons">add_circle_outline</i></button>
                 <button id="new-close-button" onClick={ hide }><i class="material-icons">cancel</i></button>
             </footer>

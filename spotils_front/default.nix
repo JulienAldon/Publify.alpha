@@ -1,4 +1,4 @@
-{ nodepkg, cookieDomain, serviceUri }:
+{ nodepkg, cookieDomain, serviceUrl }:
 nodepkg.mkNodePackage {
     pname = "spotils-front";
     version = "1.0.0-rc.1";
@@ -6,7 +6,7 @@ nodepkg.mkNodePackage {
 
     buildPhase = ''
         export COOKIE_DOMAIN=${cookieDomain}
-        export SERVICE_URI=${serviceUri}
+        export SERVICE_URL=${serviceUrl}
         npm run build
     '';
     installPhase = ''

@@ -31,7 +31,7 @@ function Dashboard() {
 	const { isShowingMessage, toggleMessage } = useMessage();
 	const authContext = useAuth();
 	const { toastList, setToastList } = useToast();
-	const { data, error } = useSWR([`${settings.SERVICE_URI}/playlist`, authContext.token], getPlaylists);
+	const { data, error } = useSWR([`${settings.SERVICE_URL}/playlist`, authContext.token], getPlaylists);
 	const [ links, setLinks ] = useState([]);
 	const [ messageMode, setMessageMode ] = useState("");
 	const [ messageTitle, setMessageTitle ] = useState("");
@@ -97,8 +97,8 @@ function Dashboard() {
 									}} title="Copy content of collaborative playlist into public playlist (Synchronize mode)"><i id={`forward${elem.id}`} class="material-icons">arrow_forward</i></button>
 									<button onClick={ () => {
 										document.getElementById("delete"+elem.id).classList.add("pending");
-										mutate([`${settings.SERVICE_URI}/playlist/`, elem.id, authContext.token], deleteLink(`${settings.SERVICE_URI}/playlist/`, elem.id, authContext.token)).then(
-											mutate([`${settings.SERVICE_URI}/playlist`, authContext.token]).then(() => {
+										mutate([`${settings.SERVICE_URL}/playlist/`, elem.id, authContext.token], deleteLink(`${settings.SERVICE_URL}/playlist/`, elem.id, authContext.token)).then(
+											mutate([`${settings.SERVICE_URL}/playlist`, authContext.token]).then(() => {
 												setToastList((toastList) => {return [...toastList, {
 													id: elem.id,
 													title: "Info",

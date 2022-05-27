@@ -19,9 +19,9 @@ function PlaylistAnalytics() {
 		return <LoadError></LoadError>
 
         const [ graphType, setGraphType ] = useState("None");
-    const { data, error } = useSWR([`${settings.SERVICE_URI}/playlist-info/`, window.location.pathname.slice(11), authContext.token], getPlaylistInfos);
-    const { data: analytic, error: analyticError } = useSWR([`${settings.SERVICE_URI}/playlist/${window.location.pathname.slice(11)}/graph${graphType != 'None' ? '?graph_type='+graphType : ""}`, authContext.token], getPlaylistAnalytic);
-    const { data: users, error: usersError } = useSWR([`${settings.SERVICE_URI}/users/${window.location.pathname.slice(11)}`, authContext.token], getUsersInfo);
+    const { data, error } = useSWR([`${settings.SERVICE_URL}/playlist-info/`, window.location.pathname.slice(11), authContext.token], getPlaylistInfos);
+    const { data: analytic, error: analyticError } = useSWR([`${settings.SERVICE_URL}/playlist/${window.location.pathname.slice(11)}/graph${graphType != 'None' ? '?graph_type='+graphType : ""}`, authContext.token], getPlaylistAnalytic);
+    const { data: users, error: usersError } = useSWR([`${settings.SERVICE_URL}/users/${window.location.pathname.slice(11)}`, authContext.token], getUsersInfo);
     if (!data || !analytic || !users)
         return <Loader></Loader>
     if (error || analyticError || usersError)

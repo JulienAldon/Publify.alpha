@@ -20,7 +20,7 @@ function Analytics() {
 		return <LoadError></LoadError>	
 
 	const authContext = useAuth();
-	const { data, error } = useSWR([`${settings.SERVICE_URI}/playlist`, authContext.token], getPlaylists)
+	const { data, error } = useSWR([`${settings.SERVICE_URL}/playlist`, authContext.token], getPlaylists)
 	if (error) 
 		return <LoadError></LoadError>
 	if (!data || !data?.result || !data?.result?.collaborative || !data?.result?.watched || !data?.result?.public) 

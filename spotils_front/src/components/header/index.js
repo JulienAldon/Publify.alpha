@@ -14,7 +14,7 @@ function logout() {
 	route('/');
 }
 function login() {
-	window.location.replace(`${settings.SERVICE_URI}/api/auth/login`);
+	window.location.replace(`${settings.SERVICE_URL}/api/auth/login`);
 }
 
 function Header() {

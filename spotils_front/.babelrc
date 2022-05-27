@@ -6,7 +6,7 @@
     ["transform-inline-environment-variables", {
       "include": [
         "REACT_APP_ENV",
-        "SERVICE_URI",
+        "SERVICE_URL",
         "COOKIE_DOMAIN"
       ]
     }]
