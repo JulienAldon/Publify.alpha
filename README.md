@@ -13,6 +13,14 @@ Multiples environment variables are required for this application to run.
 - **APP_ENV** : Environment to choose before starting server.
 
 ## Local development
+If no **APP_ENV** is set the app start with a default configuration:
+if you want to config everything via your environment set this value to `env`
+- **origin** : `localhost` or `localhost:8080`
+- Sqlite database will be created
+- **CALLBACK_URL** is set on `https://xxx.localhost/api/auth/authorized` this must match in your [spotify developper dashboard](https://developer.spotify.com/dashboard/login).
+- **REDIRECT_URL** is set on `http://localhost:8080`
+
+This is the minimal setup for local developpement.
 ```sh
 export APP_ENV=""
 export SPOTIFY_CLIENT_ID=<your-spotify-client-id>
@@ -26,11 +34,19 @@ pipenv run uvicorn main:app --reload
 --------|-----------------------|-------------------------------------------| 
 |GET    | /playlist             | # Return a playlist list                  |
 |GET    | /playlist/`<id>`      | # Return a playlist's link information    |
-|GET    | /playlist/`<id>`/sync | # Get synchronization status for playlist |
+|GET    | /playlist/`<id>`/sync | # Return a synchronization status for playlist|
 |PUT    | /playlist/`<id>`      | # Update a playlist link                  |
 |PUT    | /playlist/`<id>`/sync | # Request synchronization of a playlist   |
 |POST   | /playlist             | # Create a new playlist synchronization   |
 |DELETE | /playlist/`<id>`      | # Remove a synchronization link           |
+|GET    | /playlist-info/`<spotify_playlist_id>` | # Return a playlist informations|
+|GET    | /auth/login           | # This link redirect to login with spotify|
+|GET    | /auth/authorized      | # Callback url on which spotify redirects to after login|
+|GET    | /auth/user            | # Return User informations                |
+|GET    | /users/`<playlist_id>`| # Return User informations for the playlist|
+|GET    | /playlist/`<playlist_id>`/graph| # Return playlist graph|
+|POST    | /radio| # Create a radio playlist|
+
 
 # Spotils_front
 ## Environment variables
@@ -38,6 +54,9 @@ pipenv run uvicorn main:app --reload
 - **COOKIE_DOMAIN** : Fully qualified domain name of the spotils_front app.
 
 ## Local development
+**REACT_APP_ENV** environment variable define which configuration will be used
+if you want to config everything via your environment set this value to `env`
+by default it fallback to `localhost` for COOKIE_DOMAIN and `localhost:8000` for SERVICE_URL
 ```sh
 npm run dev
 ```
