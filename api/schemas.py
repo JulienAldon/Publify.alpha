@@ -2,15 +2,12 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-
 class SyncBase(BaseModel):
     collaborative: str
     public: str
 
-
 class ItemCreate(SyncBase):
     pass
-
 
 class Sync(SyncBase):
     id: int
@@ -18,7 +15,6 @@ class Sync(SyncBase):
 
     class Config:
         orm_mode = True
-
 
 class UserBase(BaseModel):
     name: str

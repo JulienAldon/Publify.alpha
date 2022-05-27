@@ -11,8 +11,7 @@ import spotipy_driver as spdrv
 
 from database import SessionLocal, engine
 from models import Base
-from crud import *
-from schemas import *
+from crud import get_user_by_spotify_id, create_user, delete_sync, get_sync_by_id, get_sync_by_owner, create_user_sync
 from secrets import origins, REDIRECT, ROOT_FQDN, CLIENT_ID, CLIENT_SECRET, SCOPES
 
 Base.metadata.create_all(bind=engine)

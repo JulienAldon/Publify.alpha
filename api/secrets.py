@@ -7,6 +7,11 @@ if os.getenv('FASTAPI_ENV') == 'prod':
     ]
     REDIRECT  = 'https://auth.publify.aldon.info/api/auth/authorized'
     ROOT_FQDN = 'https://publify.aldon.info'
+elif os.getenv('FASTAPI_ENV') == 'env':
+    REDIRECT = os.getenv('REDIRECT_URL')
+    ROOT_FQDN = os.getenv('ROOT_FQDN')
+    origins = os.getenv('ORIGINS')
+    SQLALCHEMY_DATABASE_URL = os.getenv('SQLALCHEMY_DATABASE_URL')
 else:
     SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
     origins = [
@@ -19,6 +24,7 @@ else:
 
 CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
 CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
+
 SCOPES    = '+'.join((
 'playlist-read-private',
 'playlist-modify-private',
