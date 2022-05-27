@@ -10,7 +10,7 @@ if os.getenv('FASTAPI_ENV') == 'prod':
 elif os.getenv('FASTAPI_ENV') == 'env':
     REDIRECT = os.getenv('REDIRECT_URL')
     ROOT_FQDN = os.getenv('ROOT_FQDN')
-    origins = os.getenv('ORIGINS')
+    origins = [os.getenv('ORIGIN')]
     SQLALCHEMY_DATABASE_URL = os.getenv('SQLALCHEMY_DATABASE_URL')
 else:
     SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
