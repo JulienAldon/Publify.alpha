@@ -96,7 +96,7 @@ in {
         EnvironmentFile = cfg.envFile;
         User = cfg.user;
         Group = cfg.group;
-        ExecStart = "${cfg.uvicorn.package}/bin/uvicorn --host ${cfg.host} --port ${cfg.port} --app-dir ${flake.packages.${system}.spotils-back} ${cfg.uvicorn.extraArguments} spotils_back:app";
+        ExecStart = "${cfg.uvicorn.package}/bin/uvicorn --host ${cfg.host} --port ${builtins.toString cfg.port} --app-dir ${flake.packages.${system}.spotils-back} ${cfg.uvicorn.extraArguments} spotils_back:app";
       };
     };
   };
