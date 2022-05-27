@@ -1,0 +1,13 @@
+.select {
+    align-self: flex-start;
+    margin-bottom: 1rem;
+    margin-left: 3rem;
+}
+
+.selectLabel {
+    color: #fff;
+    align-self: flex-start;
+    margin-left: 3rem;
+    margin-bottom: 0.2rem;
+    width: 10rem;
+}

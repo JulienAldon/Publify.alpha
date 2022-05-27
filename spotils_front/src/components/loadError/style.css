@@ -1,0 +1,28 @@
+.lds {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    padding-top: 5rem;
+    color: #FFf;
+}
+
+.lds:hover {
+    color: white;
+	text-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.7);
+}
+
+.title {
+    margin: 0px;
+    padding: 0.75rem;
+	text-align: center;
+    color: white;
+}
+
+.loginButton:hover {
+    color: #1ED760;
+}
+
+.loginButton {
+    font-size: 2rem;
+}

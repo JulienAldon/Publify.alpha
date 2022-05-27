@@ -1,0 +1,74 @@
+main {
+    color: white;
+	flex-basis: 50%;
+    flex-shrink: 1;
+    margin: 0px;
+
+    overflow: hidden;
+	/* white-space: nowrap; */
+    text-overflow: ellipsis;
+    display: flex;
+}
+form ul {
+    overflow: auto;
+    padding: 0;
+}
+
+main h1 {
+    margin: 0px;
+    padding: 0.75rem;
+	text-align: center;
+}
+
+form li {
+    list-style: none;
+    display: flex;
+    flex-flow: column;
+}
+
+form label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-wrap: ellipsis;
+    /* text-align: center; */
+    padding: 0.5rem;
+    padding-left: 2rem;
+
+    transition: all 0.2s ease;
+}
+
+main footer {
+    align-self: stretch;
+	/* height: 3.5rem; */
+    /* flex-shrink: 0; */
+    text-align: center;
+    align-items: center;
+    flex: 1 1 auto;
+    margin: 1rem;
+}
+
+form {
+    padding: 0;
+    display: flex;
+    flex-basis: 70%;
+    flex-grow: 1;
+    flex-shrink: 0;
+    align-items: stretch;
+    flex-flow: column;
+    overflow: hidden;
+    flex: 1 1 auto;
+}
+
+form li input {
+    display: none;
+}
+
+form li:nth-child(2n) {
+    background-color: rgba(80,2, 10, 0.2);
+}
+
+
+form li input:checked + label {
+    background: rgba(255, 255, 255, 0.7);
+    color: rgba(22,22,22,1)
+}

@@ -1,0 +1,101 @@
+a {
+	color: white;
+	transition: all 0.5s ease;
+}
+
+a:hover {
+	color: #1ED760;
+}
+
+header a:focus {
+	color: white;
+	text-shadow: 0 0 0.5rem rgba(255, 255, 255, 1);
+}
+
+button {
+	background: none;
+	border: none;
+	color: white;
+	transition: all 0.5s ease;
+}
+
+header button:hover {
+	color: white;
+	text-shadow: 0 0 0.5rem rgba(255, 255, 255, 1);
+	transition: all 0.2s ease;
+}
+header button:focus {
+	color: white;
+	text-shadow: 0 0 0.5rem rgba(255, 255, 255, 1);
+}
+header a {
+	text-decoration: none;
+	align-self: stretch;
+	padding: 1.25rem 0.75rem;
+	font-size: 1rem;
+	vertical-align: center;
+}
+
+header a:hover {
+	color: white;
+	text-shadow: 0 0 0.5rem rgba(255, 255, 255, 1);
+	transition: all 0.2s ease;
+}
+
+header h1 a:hover {
+	background: none;
+}
+
+header h1 a {
+	font-size: 2rem;
+	padding: 0;
+}
+
+header, header aside {
+	display: flex;
+	flex-flow: row;
+	align-items: stretch;
+}
+
+header aside {
+	justify-content: flex-end;
+	flex-grow: 1;
+}
+
+header {
+	background: linear-gradient(#00000060 0%, #00000000 100%);
+	color: white;
+}
+
+header h1 {
+	font-size: 2rem;
+	padding: 0;
+	margin: 0;
+	padding: 0.5rem 0.75rem;
+}
+
+header a:hover {
+	color: white;
+	text-shadow: 0 0 0.5rem rgba(255, 255, 255, 1);
+	transition: all 0.2s ease;
+}
+
+header h1 a:hover {
+	background: none;
+}
+
+header h1 a {
+	font-size: 2rem;
+	padding: 0;
+}
+
+@media (max-width: 34rem) {
+	header, header aside {
+		flex-flow: column;
+		text-align: center;
+		justify-content: center;
+	}
+	header a {
+		padding: .2rem 0.75rem;
+	}
+}
