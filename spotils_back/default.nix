@@ -1,6 +1,6 @@
 { pkgs, ... }:
 
-pkgs.python39Packages.buildPythonApplication {
+pkgs.python39Packages.buildPythonPackage {
   pname = "spotils-back";
   src = ./.;
   version = "1.0.0-rc.1";
