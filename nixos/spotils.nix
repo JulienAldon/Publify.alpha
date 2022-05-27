@@ -19,13 +19,13 @@ in {
 
     group = lib.mkOption {
       type = lib.types.str;
-      default = "publify";
+      default = "spotils";
       description = "Group under which the service runs.";
     };
 
     user = lib.mkOption {
       type = lib.types.str;
-      default = "publify";
+      default = "spotils";
       description = "User under which the service runs.";
     };
 
@@ -71,18 +71,18 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    users.users = lib.optionalAttrs (cfg.user == "publify") {
-      publify = {
+    users.users = lib.optionalAttrs (cfg.user == "spotils") {
+      spotils = {
         group = cfg.group;
         isSystemUser = true;
       };
     };
 
-    users.groups = lib.optionalAttrs (cfg.group == "publify") {
-      publify = {};
+    users.groups = lib.optionalAttrs (cfg.group == "spotils") {
+      spotils = {};
     };
 
-    systemd.services.publify = {
+    systemd.services.spotils = {
       description = "Spotify playlist managment tool";
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
