@@ -1,4 +1,25 @@
-# Spotils_back
+# Spotils
+Management tools for spotify collaborative playlist and public playlists.
+
+## Publify
+This tool allow to *synchronize* **collaborative** playlists and **public** playlists, removing doubles.
+
+This allow you and your friend to create collaborative playlists, share a public version of the playlist to strangers and use this tool to keep the public playlist updated with the collaborative one.
+
+![Exemple for the sync selection](./assets/publify-syncs.png)
+
+## Statify
+This tool create **collaboration** statistics for a given collaborative playlist. It create a graph that shows playlist activity per user.
+
+![Exemple for a playlist <ClassicalDelight>](./assets/graph-instrumentalness.png)
+
+## Scanify
+This tool create a **private** playlist with all the recents releases of the artists of a selected playlist.
+
+![Exemple of the playlist selection.](./assets/radio-list.png)
+
+# Spotils Back
+[Folder](spotils_back)
 ## Environment variables
 Multiples environment variables are required for this application to run.
 ### Secret Environment variables
@@ -48,7 +69,9 @@ pipenv run uvicorn main:app --reload
 |POST    | /radio| # Create a radio playlist|
 
 
-# Spotils_front
+# Spotils Front
+[Folder](spotils_front)
+
 ## Environment variables
 - **SERVICE_URL** : Url of the spotils_back service.
 - **COOKIE_DOMAIN** : Fully qualified domain name of the spotils_front app.
