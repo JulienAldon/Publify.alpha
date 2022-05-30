@@ -19,7 +19,20 @@ This tool create a **private** playlist with all the recents releases of the art
 ![Exemple of the playlist selection.](./assets/radio-list.png)
 
 # Spotils Back
+Application made with Python with the FastAPI framework.
+SQL database made with PostgreSQL.
+
+## Dependencies
+Dependencies are described in the [Pipfile](./spotils_back/Pipfile)
+
+For local development use 
+```sh
+pipenv install
+pipenv run uvicorn spotils_back:app --reload
+```
+
 [Folder](spotils_back)
+
 ## Environment variables
 Multiples environment variables are required for this application to run.
 ### Secret Environment variables
@@ -33,9 +46,8 @@ Multiples environment variables are required for this application to run.
 - **CORS_ORIGIN** : Allowed origin for Cross Origin Resource Sharing.
 - **APP_ENV** : Environment to choose before starting server.
 
-## Local development
 If no **APP_ENV** is set the app start with a default configuration:
-if you want to config everything via your environment set this value to `env`
+if you want to configure everything via your environment set this value to `env`
 - **origin** : `localhost` or `localhost:8080`
 - Sqlite database will be created
 - **CALLBACK_URL** is set on `https://xxx.localhost/api/auth/authorized` this must match in your [spotify developper dashboard](https://developer.spotify.com/dashboard/login).
@@ -68,18 +80,26 @@ pipenv run uvicorn main:app --reload
 |GET    | /playlist/`<playlist_id>`/graph| # Return playlist graph|
 |POST    | /radio| # Create a radio playlist|
 
-
 # Spotils Front
+Application made with Preact microframework.
 [Folder](spotils_front)
+
+## Dependencies
+All dependencies are described inside the [npm](./spotils_front/package.json) file
+
+For local development, please use :
+```sh
+npm install
+npm run dev
+```
 
 ## Environment variables
 - **SERVICE_URL** : Url of the spotils_back service.
 - **COOKIE_DOMAIN** : Fully qualified domain name of the spotils_front app.
 
-## Local development
 **REACT_APP_ENV** environment variable define which configuration will be used
 if you want to config everything via your environment set this value to `env`
-by default it fallback to `localhost` for COOKIE_DOMAIN and `localhost:8000` for SERVICE_URL
+by default it fallback to `localhost` for **COOKIE_DOMAIN** and `localhost:8000` for **SERVICE_URL**
 ```sh
 npm run dev
 ```
